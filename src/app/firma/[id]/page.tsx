@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers, Lock } from "lucide-react";
+import { Globe, Phone, Mail, MapPin, ShieldCheck, Zap, Layers, Lock, TrendingUp } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
-import { Card, Badge, SectionLabel } from "@/components/ui/Card";
-import { VerifiedStamp } from "@/components/ui/VerifiedStamp";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { ConnectButton } from "@/components/ConnectButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { StartConversationButton } from "@/components/StartConversationButton";
@@ -110,10 +109,10 @@ export default async function CompanyPage({
   // ---- reprezentant (date personale) — RLS decide daca randul e vizibil -----
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("nume_complet, telefon_personal, email_personal")
+    .select("nume_complet, telefon_personal, email_personal, avatar_url")
     .eq("id", company.owner_id)
     .maybeSingle();
-  const profil = profileData as Pick<Profile, "nume_complet" | "telefon_personal" | "email_personal"> | null;
+  const profil = profileData as Pick<Profile, "nume_complet" | "telefon_personal" | "email_personal" | "avatar_url"> | null;
 
   // ---- stare conexiune / eligibilitate recenzie pentru vizitatorul curent ----
   const {
@@ -187,339 +186,434 @@ export default async function CompanyPage({
   const domeniuPrincipal = categorii.find((c) => c.is_primary)?.categories?.name_ro;
   const domeniiSecundare = categorii.filter((c) => !c.is_primary && c.categories);
 
+  // Initialele firmei, pentru cand nu exista logo („Registru Bun SRL” -> „RB”).
+  const initiale =
+    company.denumire
+      .replace(/\b(S\.?R\.?L\.?|S\.?A\.?|P\.?F\.?A\.?|I\.?I\.?)\b/gi, "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "—";
+
+  const angajati = financiar?.numar_salariati ?? company.numar_angajati ?? null;
+  const cifre = [
+    company.data_inregistrare
+      ? { valoare: String(new Date(company.data_inregistrare).getFullYear()), eticheta: "înființată" }
+      : null,
+    angajati != null
+      ? { valoare: angajati.toLocaleString("ro-RO"), eticheta: "angajați" }
+      : company.dimensiune_echipa
+        ? { valoare: company.dimensiune_echipa, eticheta: "angajați" }
+        : null,
+    company.rating_numar > 0
+      ? { valoare: company.rating_mediu.toFixed(1), eticheta: `${company.rating_numar} ${company.rating_numar === 1 ? "recenzie" : "recenzii"}` }
+      : { valoare: company.vizualizari.toLocaleString("ro-RO"), eticheta: "vizualizări" },
+  ].filter((c): c is { valoare: string; eticheta: string } => c !== null);
+
+  const verificatLa = company.anaf_ultima_verificare
+    ? new Date(company.anaf_ultima_verificare).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
+    : null;
+
+  const datePublice = [
+    { eticheta: "CUI", valoare: String(company.cui) },
+    company.nr_reg_com ? { eticheta: "Nr. Reg. Com.", valoare: company.nr_reg_com } : null,
+    company.cod_caen_principal
+      ? {
+          eticheta: "CAEN principal",
+          valoare: [company.cod_caen_principal, company.den_caen_principal].filter(Boolean).join(" · "),
+        }
+      : null,
+    company.tva_activ != null ? { eticheta: "Plătitor de TVA", valoare: company.tva_activ ? "Da" : "Nu" } : null,
+    company.stare_inregistrare ? { eticheta: "Stare", valoare: company.stare_inregistrare } : null,
+    { eticheta: "Sursa", valoare: verificatLa ? `ANAF, verificat pe ${verificatLa}` : "ANAF" },
+  ].filter((r): r is { eticheta: string; valoare: string } => r !== null);
+
+  const areOferta = domeniiSecundare.length > 0 || Boolean(company.domenii_altele) || oferte.length > 0;
+  const areCautari = categoriiCautate.length > 0 || Boolean(company.domenii_cautate_altele) || nevoi.length > 0;
+  const titluSectiune = "text-[1.625rem] leading-tight text-ink md:text-3xl";
+  const chip =
+    "inline-flex min-h-[34px] items-center rounded-full border border-line bg-surface px-3.5 text-sm font-semibold text-ink";
+
   return (
-    <div className="mx-auto max-w-4xl px-5 py-12">
+    <div className="mx-auto max-w-4xl pb-12 md:px-5 md:py-10">
       {company.status !== "approved" && (
-        <div className="mb-6 rounded-lg bg-seal/10 px-4 py-2.5 text-sm text-seal">
+        <div className="mx-5 mt-4 rounded-xl bg-gold-pale px-4 py-2.5 text-sm text-gold-ink md:mx-0 md:mt-0 md:mb-6">
           Acest profil nu e încă public — îl vezi pentru că ești proprietarul sau un administrator.
         </div>
       )}
 
-      {/* Banner + avatar — antetul de profil, cu adancime si accent */}
-      <div className="block-raised relative overflow-hidden p-0">
-        <div className="relative h-40 w-full overflow-hidden sm:h-56">
-          {company.banner_url ? (
-            <Image src={company.banner_url} alt="" fill className="object-cover" unoptimized />
-          ) : (
-            <div className="mesh-hero h-full w-full">
-              <div aria-hidden className="absolute inset-0 grid-registry" />
-            </div>
-          )}
-          {/* gradient jos, ca avatarul si textul sa aiba contrast garantat */}
-          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
-        </div>
-
-        <div className="relative px-6 pb-6">
-          <div className="-mt-12 flex items-end justify-between gap-4">
-            <div className="relative h-24 w-24 overflow-hidden rounded-2xl border-4 border-surface bg-surface shadow-[var(--shadow-lg)]">
-              {company.logo_url ? (
-                <Image src={company.logo_url} alt={company.denumire} fill className="object-cover" unoptimized />
-              ) : (
-                <div className="flex h-full items-center justify-center bg-ink/4 text-ink-soft/40">
-                  <Building2 className="h-9 w-9" strokeWidth={1.5} />
-                </div>
-              )}
-            </div>
-            <div className="mb-1 flex shrink-0 items-center gap-2">
-              <FavoriteButton companyId={company.id} />
-            </div>
+      {/* ================= COPERTA =================
+          Fotografia firmei, daca a incarcat una. Altfel o suprafata plina, cu
+          semnul ACDR discret — fara fotografii de stoc puse in numele firmei. */}
+      <div className="relative h-[220px] w-full overflow-hidden bg-olive-pale md:h-64 md:rounded-[28px]">
+        {company.banner_url ? (
+          <Image src={company.banner_url} alt="" fill className="object-cover" unoptimized />
+        ) : (
+          <div aria-hidden className="flex h-full items-center justify-center">
+            <BrandMark className="h-20 w-20 opacity-15" />
           </div>
-
-          <div className="mt-4 flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              {domeniuPrincipal && <p className="stamp-label text-seal">{domeniuPrincipal}</p>}
-              <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                {company.denumire}
-              </h1>
-
-              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-ink-soft/60" />
-                  {[company.localitate, judetNume].filter(Boolean).join(", ") || "—"}
-                </span>
-                {company.rating_numar > 0 && (
-                  <span className="flex items-center gap-1.5">
-                    <Star className="h-4 w-4 fill-seal text-seal" />
-                    <span className="font-mono-num font-semibold text-ink">
-                      {company.rating_mediu.toFixed(1)}
-                    </span>
-                    <span className="text-ink-soft/70">({company.rating_numar} recenzii)</span>
-                  </span>
-                )}
-                <span className="flex items-center gap-1.5 text-ink-soft/70">
-                  <Eye className="h-4 w-4" />
-                  <span className="font-mono-num">{company.vizualizari}</span>
-                </span>
-              </div>
-            </div>
-
-            <VerifiedStamp size="md" className="hidden shrink-0 sm:block" />
-          </div>
-        </div>
-      </div>
-
-      {company.discount_procent ? (
-        <div className="mt-6 overflow-hidden rounded-2xl gradient-seal p-[1.5px] shadow-[var(--shadow-md)]">
-          <div className="rounded-[calc(1.25rem-1px)] bg-surface p-5">
-            <div className="flex flex-wrap items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl gradient-seal text-primary-content shadow-[var(--shadow-sm)]">
-                <span className="font-mono-num text-lg font-bold">-{company.discount_procent}%</span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="stamp-label text-seal">Reducere pentru membrii ACDR</p>
-                <p className="mt-1.5 font-semibold text-ink">
-                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din ACDR`}
-                </p>
-                {company.discount_conditii && (
-                  <p className="mt-1 text-sm text-ink-soft">{company.discount_conditii}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {company.descriere && (
-        <p className="mt-8 max-w-2xl text-base leading-relaxed text-ink-soft">{company.descriere}</p>
-      )}
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {domeniiSecundare.map((c) => (
-          <Badge key={c.categories!.id}>{c.categories!.name_ro}</Badge>
-        ))}
-        {company.domenii_altele && <Badge tone="neutral">{company.domenii_altele}</Badge>}
-        {company.dimensiune_echipa && (
-          <Badge tone="neutral">
-            <Users className="mr-1 h-3 w-3 inline" /> {company.dimensiune_echipa} angajați
-          </Badge>
-        )}
-        {financiar?.cifra_afaceri != null && (
-          <Badge tone="success">
-            <TrendingUp className="mr-1 h-3 w-3 inline" />
-            {financiar.cifra_afaceri.toLocaleString("ro-RO")} lei ({financiar.an})
-          </Badge>
-        )}
-        {company.timp_raspuns && (
-          <Badge tone="success">
-            <Zap className="mr-1 h-3 w-3 inline" /> {TIMP_RASPUNS_LABEL[company.timp_raspuns]}
-          </Badge>
-        )}
-        {company.proiect_marime && (
-          <Badge tone="violet">
-            <Layers className="mr-1 h-3 w-3 inline" /> Proiecte {etichetaProiectMarime(company.proiect_marime)}
-          </Badge>
-        )}
-        {company.data_inregistrare && (
-          <Badge tone="neutral">Activă din {new Date(company.data_inregistrare).getFullYear()}</Badge>
         )}
       </div>
 
-      {(categoriiCautate.length > 0 || company.domenii_cautate_altele) && (
-        <div className="mt-4">
-          <p className="stamp-label text-teal">Caută</p>
-          <div className="mt-1.5 flex flex-wrap gap-2">
-            {categoriiCautate.map((c) => (
-              <Badge key={c.categories!.id} tone="neutral" className="border border-teal/30 text-teal">
-                {c.categories!.name_ro}
-              </Badge>
-            ))}
-            {company.domenii_cautate_altele && (
-              <Badge tone="neutral" className="border border-teal/30 text-teal">
-                {company.domenii_cautate_altele}
-              </Badge>
+      {/* ================= CARTEA DE VIZITA ================= */}
+      <section className="relative mx-4 -mt-9 flex flex-col gap-4 rounded-[22px] border border-line bg-surface p-5 shadow-[var(--shadow-md)] md:mx-8 md:-mt-14 md:p-7">
+        <div className="flex items-start gap-3.5">
+          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-primary text-primary-content md:h-16 md:w-16">
+            {company.logo_url ? (
+              <Image src={company.logo_url} alt={company.denumire} fill className="object-cover" unoptimized />
+            ) : (
+              <span className="font-display text-2xl font-medium">{initiale}</span>
             )}
           </div>
+          <div className="min-w-0 flex-1">
+            {domeniuPrincipal && <p className="stamp-label text-seal">{domeniuPrincipal}</p>}
+            <h1 className="mt-1 text-[1.75rem] leading-[1.15] text-ink md:text-4xl">{company.denumire}</h1>
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-ink-soft">
+              <MapPin className="h-4 w-4 shrink-0" />
+              {[company.localitate, judetNume].filter(Boolean).join(", ") || "—"}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <FavoriteButton companyId={company.id} />
+          </div>
         </div>
-      )}
 
-      {company.tags && company.tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {company.tags.map((t) => (
-            <span key={t} className="rounded-full bg-ink/6 px-2.5 py-1 text-xs text-ink-soft">
-              {t}
+        {company.status === "approved" && (
+          <div className="flex items-center gap-2.5 rounded-[14px] bg-olive-pale px-3.5 py-3">
+            <ShieldCheck className="h-5 w-5 shrink-0 text-seal" strokeWidth={2.2} />
+            <div className="flex flex-col">
+              <span className="text-sm font-extrabold text-seal">Verificată la ANAF</span>
+              <span className="text-xs text-ink-soft">
+                {company.radiata ? "Radiată" : company.stare_inregistrare || "Firmă activă"}
+                {verificatLa ? ` · verificat pe ${verificatLa}` : ""}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {cifre.length > 0 && (
+          <dl className="grid grid-cols-3 gap-2 tabular-nums">
+            {cifre.map((c, i) => (
+              <div key={c.eticheta} className={i > 0 ? "border-l border-line pl-3" : ""}>
+                <dt className="sr-only">{c.eticheta}</dt>
+                <dd className="font-display text-2xl leading-7 text-ink">{c.valoare}</dd>
+                <dd aria-hidden="true" className="mt-0.5 text-xs text-ink-soft">{c.eticheta}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+          <ConnectButton
+            targetCompanyId={company.id}
+            connectionId={connectionId}
+            stareInitiala={stareConexiune}
+            autentificat={Boolean(user)}
+          />
+          {user?.id !== company.owner_id && (
+            <StartConversationButton
+              profileId={company.owner_id}
+              numeDestinatar={profil?.nume_complet ?? company.denumire}
+              autentificat={Boolean(user)}
+              size="md"
+            />
+          )}
+        </div>
+      </section>
+
+      <div className="flex flex-col gap-9 px-5 pt-8 md:px-0 md:pt-10">
+        {company.discount_procent ? (
+          <section className="flex items-start gap-4 rounded-[20px] bg-gold-pale p-5">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-gold font-display text-xl text-[#121614]">
+              -{company.discount_procent}%
             </span>
-          ))}
-        </div>
-      )}
+            <div className="min-w-0 flex-1">
+              <p className="stamp-label text-gold-ink">Reducere pentru membrii ACDR</p>
+              <p className="mt-1.5 font-bold text-ink">
+                {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din ACDR`}
+              </p>
+              {company.discount_conditii && <p className="mt-1 text-sm text-ink-soft">{company.discount_conditii}</p>}
+            </div>
+          </section>
+        ) : null}
 
-      {(company.facebook_url || company.instagram_url || company.linkedin_url) && (
-        <div className="mt-4 flex gap-3">
-          {company.facebook_url && (
-            <a href={company.facebook_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
-              <FacebookIcon className="h-5 w-5" />
-            </a>
-          )}
-          {company.instagram_url && (
-            <a href={company.instagram_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
-              <InstagramIcon className="h-5 w-5" />
-            </a>
-          )}
-          {company.linkedin_url && (
-            <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
-              <LinkedinIcon className="h-5 w-5" />
-            </a>
-          )}
-        </div>
-      )}
+        {/* ================= DESPRE ================= */}
+        {(company.descriere || company.timp_raspuns || company.proiect_marime || financiar?.cifra_afaceri != null) && (
+          <section className="flex flex-col gap-4">
+            <h2 className={titluSectiune}>Despre firmă</h2>
+            {company.descriere && (
+              <p className="max-w-2xl text-base leading-relaxed text-ink-soft">{company.descriere}</p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {company.timp_raspuns && (
+                <span className={chip}>
+                  <Zap className="mr-1.5 h-3.5 w-3.5 text-seal" /> {TIMP_RASPUNS_LABEL[company.timp_raspuns]}
+                </span>
+              )}
+              {company.proiect_marime && (
+                <span className={chip}>
+                  <Layers className="mr-1.5 h-3.5 w-3.5 text-seal" /> Proiecte {etichetaProiectMarime(company.proiect_marime)}
+                </span>
+              )}
+              {financiar?.cifra_afaceri != null && (
+                <span className={chip}>
+                  <TrendingUp className="mr-1.5 h-3.5 w-3.5 text-seal" />
+                  {financiar.cifra_afaceri.toLocaleString("ro-RO")} lei ({financiar.an})
+                </span>
+              )}
+            </div>
+          </section>
+        )}
 
-      <div className="mt-8 grid gap-6 sm:grid-cols-2">
-        <Card>
-          <SectionLabel icon={<Phone className="h-3.5 w-3.5" />}>Contact firmă</SectionLabel>
-          <div className="mt-3 space-y-2 text-sm">
-            {(company.telefon_firma || company.email_firma) && (
-              vizitatorulEVerificat ? (
+        {/* ================= CE OFERA ================= */}
+        {areOferta && (
+          <section className="flex flex-col gap-4">
+            <h2 className={titluSectiune}>Ce oferă</h2>
+            {(domeniiSecundare.length > 0 || company.domenii_altele) && (
+              <div className="flex flex-wrap gap-2">
+                {domeniiSecundare.map((c) => (
+                  <span key={c.categories!.id} className={chip}>
+                    {c.categories!.name_ro}
+                  </span>
+                ))}
+                {company.domenii_altele && <span className={chip}>{company.domenii_altele}</span>}
+              </div>
+            )}
+            {oferte.length > 0 && (
+              <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface px-4">
+                {oferte.map((o, i) => (
+                  <li key={i} className="py-3 text-sm text-ink">
+                    <span className="font-bold">{o.categories?.name_ro ?? ""}</span>
+                    {o.nota && <span className="text-ink-soft"> — {o.nota}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        {/* ================= CE CAUTA ================= */}
+        {areCautari && (
+          <section className="flex flex-col gap-4">
+            <h2 className={titluSectiune}>Ce caută</h2>
+            {(categoriiCautate.length > 0 || company.domenii_cautate_altele) && (
+              <div className="flex flex-wrap gap-2">
+                {categoriiCautate.map((c) => (
+                  <span key={c.categories!.id} className="inline-flex min-h-[34px] items-center rounded-full bg-gold-pale px-3.5 text-sm font-bold text-gold-ink">
+                    {c.categories!.name_ro}
+                  </span>
+                ))}
+                {company.domenii_cautate_altele && (
+                  <span className="inline-flex min-h-[34px] items-center rounded-full bg-gold-pale px-3.5 text-sm font-bold text-gold-ink">
+                    {company.domenii_cautate_altele}
+                  </span>
+                )}
+              </div>
+            )}
+            {nevoi.length > 0 && (
+              <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface px-4">
+                {nevoi.map((n, i) => (
+                  <li key={i} className="py-3 text-sm text-ink">
+                    <span className="font-bold">{n.categories?.name_ro ?? ""}</span>
+                    {n.nota && <span className="text-ink-soft"> — {n.nota}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        {company.tags && company.tags.length > 0 && (
+          <div className="-mt-4 flex flex-wrap gap-1.5">
+            {company.tags.map((tag) => (
+              <span key={tag} className="rounded-full bg-ink/6 px-2.5 py-1 text-xs text-ink-soft">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* ================= OMUL DIN SPATELE FIRMEI ================= */}
+        <section className="flex flex-col gap-4">
+          <h2 className={titluSectiune}>Omul din spatele firmei</h2>
+          {profil ? (
+            <div className="grid grid-cols-[6.5rem_1fr] items-start gap-4 sm:grid-cols-[8.25rem_1fr]">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-olive-pale">
+                {profil.avatar_url ? (
+                  <Image src={profil.avatar_url} alt={profil.nume_complet ?? ""} fill className="object-cover" unoptimized />
+                ) : (
+                  <span aria-hidden className="flex h-full items-center justify-center font-display text-3xl text-seal">
+                    {(profil.nume_complet ?? "?")
+                      .split(/\s+/)
+                      .slice(0, 2)
+                      .map((w) => w[0])
+                      .join("")
+                      .toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-1.5 pt-1 text-sm">
+                <p className="text-lg font-extrabold text-ink">{profil.nume_complet}</p>
+                {profil.telefon_personal && <p className="text-ink-soft">{profil.telefon_personal}</p>}
+                {profil.email_personal && <p className="break-all text-ink-soft">{profil.email_personal}</p>}
+              </div>
+            </div>
+          ) : (
+            <p className="flex items-start gap-2 rounded-2xl bg-ink/4 p-4 text-sm text-ink-soft">
+              <Lock className="mt-0.5 h-4 w-4 shrink-0" />
+              Numele și datele reprezentantului sunt vizibile doar pentru firmele conectate.
+            </p>
+          )}
+        </section>
+
+        {/* ================= CONTACT ================= */}
+        <section className="flex flex-col gap-4">
+          <h2 className={titluSectiune}>Contact</h2>
+          <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4 text-sm">
+            {(company.telefon_firma || company.email_firma) &&
+              (vizitatorulEVerificat ? (
                 <>
                   {company.telefon_firma && (
-                    <p className="flex items-center gap-2 text-ink"><Phone className="h-4 w-4 text-ink-soft/70" /> {company.telefon_firma}</p>
+                    <a href={`tel:${company.telefon_firma}`} className="flex min-h-11 items-center gap-2.5 font-semibold text-ink hover:text-seal">
+                      <Phone className="h-4 w-4 text-seal" /> {company.telefon_firma}
+                    </a>
                   )}
                   {company.email_firma && (
-                    <p className="flex items-center gap-2 text-ink"><Mail className="h-4 w-4 text-ink-soft/70" /> {company.email_firma}</p>
+                    <a href={`mailto:${company.email_firma}`} className="flex min-h-11 items-center gap-2.5 break-all font-semibold text-ink hover:text-seal">
+                      <Mail className="h-4 w-4 shrink-0 text-seal" /> {company.email_firma}
+                    </a>
                   )}
                 </>
               ) : (
-                <div className="flex items-start gap-2 rounded-xl bg-ink/4 p-3 text-xs text-ink-soft">
-                  <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <div className="flex items-start gap-2 rounded-xl bg-ink/4 p-3 text-ink-soft">
+                  <Lock className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>
-                    {user
-                      ? "Datele de contact devin vizibile după ce contul tău e verificat de un administrator."
-                      : (
-                        <>
-                          <Link href="/login" className="font-semibold text-seal hover:underline">Autentifică-te</Link>
-                          {" "}ca membru verificat pentru a vedea telefonul și emailul firmei.
-                        </>
-                      )}
+                    {user ? (
+                      "Telefonul și emailul firmei devin vizibile după ce contul tău e verificat de un administrator."
+                    ) : (
+                      <>
+                        <Link href="/login" className="font-bold text-seal hover:underline">
+                          Intră în cont
+                        </Link>{" "}
+                        ca membru verificat pentru a vedea telefonul și emailul firmei.
+                      </>
+                    )}
                   </span>
                 </div>
-              )
-            )}
+              ))}
             {company.website && (
-              <p className="flex items-center gap-2 text-ink">
-                <Globe className="h-4 w-4 text-ink-soft/70" />
-                <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-seal hover:underline">
-                  {company.website}
-                </a>
-              </p>
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center gap-2.5 break-all font-semibold text-seal hover:underline"
+              >
+                <Globe className="h-4 w-4 shrink-0" /> {company.website}
+              </a>
             )}
-            <p className="flex items-center gap-2 text-ink-soft">
-              <Building2 className="h-4 w-4 text-ink-soft/70" /> CUI <span className="font-mono-num">{company.cui}</span>
-            </p>
+            {(company.facebook_url || company.instagram_url || company.linkedin_url) && (
+              <div className="flex gap-1">
+                {company.facebook_url && (
+                  <a href={company.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft hover:bg-ink/6 hover:text-seal">
+                    <FacebookIcon className="h-5 w-5" />
+                  </a>
+                )}
+                {company.instagram_url && (
+                  <a href={company.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft hover:bg-ink/6 hover:text-seal">
+                    <InstagramIcon className="h-5 w-5" />
+                  </a>
+                )}
+                {company.linkedin_url && (
+                  <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft hover:bg-ink/6 hover:text-seal">
+                    <LinkedinIcon className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
-        </Card>
 
-        <Card>
-          <SectionLabel icon={<UserRound className="h-3.5 w-3.5" />}>Reprezentant</SectionLabel>
-          {profil ? (
-            <div className="mt-3 space-y-1 text-sm text-ink">
-              <p className="font-medium text-ink">{profil.nume_complet}</p>
-              {profil.telefon_personal && <p>{profil.telefon_personal}</p>}
-              {profil.email_personal && <p>{profil.email_personal}</p>}
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-ink-soft">Vizibil doar pentru firmele conectate.</p>
+          {contacte.length > 0 && (
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {contacte.map((c) => (
+                <li key={c.id} className="rounded-2xl border border-line bg-surface p-4 text-sm">
+                  <p className="font-bold text-ink">{c.nume}</p>
+                  <p className="text-ink-soft">{[c.rol, c.departament].filter(Boolean).join(" · ")}</p>
+                  <p className="text-ink-soft">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
+                </li>
+              ))}
+            </ul>
           )}
-          <div className="mt-4 space-y-2.5">
-            <ConnectButton
-              targetCompanyId={company.id}
-              connectionId={connectionId}
-              stareInitiala={stareConexiune}
-              autentificat={Boolean(user)}
-            />
-            {user?.id !== company.owner_id && (
-              <StartConversationButton
-                profileId={company.owner_id}
-                numeDestinatar={profil?.nume_complet ?? company.denumire}
-                autentificat={Boolean(user)}
-                size="sm"
-              />
-            )}
-          </div>
-        </Card>
-      </div>
+        </section>
 
-      {(company.zona_deservita || company.raza_deservire_km || judeteSuplimentare.length > 0) && (
-        <Card className="mt-6">
-          <SectionLabel icon={<Navigation className="h-3.5 w-3.5" />}>Zonă deservită</SectionLabel>
-          <div className="mt-2 space-y-1 text-sm text-ink-soft">
-            {company.zona_deservita && <p>{company.zona_deservita}</p>}
-            {company.raza_deservire_km && (
-              <p>Rază de {company.raza_deservire_km} km în jurul sediului{judetNume ? ` (${judetNume})` : ""}.</p>
-            )}
-            {judeteSuplimentare.length > 0 && (
-              <p>Deservește explicit și: {judeteSuplimentare.join(", ")}.</p>
-            )}
-          </div>
-        </Card>
-      )}
+        {/* ================= ZONA DESERVITA ================= */}
+        {(company.zona_deservita || company.raza_deservire_km || judeteSuplimentare.length > 0) && (
+          <section className="flex flex-col gap-3">
+            <h2 className={titluSectiune}>Zonă deservită</h2>
+            <div className="flex flex-col gap-1 text-sm leading-relaxed text-ink-soft">
+              {company.zona_deservita && <p>{company.zona_deservita}</p>}
+              {company.raza_deservire_km && (
+                <p>
+                  Rază de {company.raza_deservire_km} km în jurul sediului{judetNume ? ` (${judetNume})` : ""}.
+                </p>
+              )}
+              {judeteSuplimentare.length > 0 && <p>Deservește explicit și: {judeteSuplimentare.join(", ")}.</p>}
+            </div>
+          </section>
+        )}
 
-      {contacte.length > 0 && (
-        <Card className="mt-6">
-          <SectionLabel icon={<Users className="h-3.5 w-3.5" />}>Persoane de contact</SectionLabel>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {contacte.map((c) => (
-              <div key={c.id} className="text-sm">
-                <p className="font-medium text-ink">{c.nume}</p>
-                <p className="text-ink-soft">{[c.rol, c.departament].filter(Boolean).join(" · ")}</p>
-                <p className="text-ink-soft">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
+        {/* ================= PORTOFOLIU ================= */}
+        {proiecte.length > 0 && (
+          <section className="flex flex-col gap-4">
+            <h2 className={titluSectiune}>Lucrări</h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {proiecte.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/firma/${id}/portofoliu/${p.id}`}
+                  className="overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-seal"
+                >
+                  <div className="relative h-36 w-full bg-ink/5 sm:h-28">
+                    {p.cover_url && <Image src={p.cover_url} alt={p.titlu} fill className="object-cover" unoptimized />}
+                  </div>
+                  <div className="p-3">
+                    <p className="text-sm font-bold text-ink">{p.titlu}</p>
+                    {p.locatie && (
+                      <p className="text-xs text-ink-soft">
+                        {p.locatie}
+                        {p.an ? ` · ${p.an}` : ""}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ================= DATE PUBLICE ================= */}
+        <section className="flex flex-col gap-3">
+          <h2 className={titluSectiune}>Date publice</h2>
+          <dl className="rounded-2xl border border-line bg-surface px-4 tabular-nums">
+            {datePublice.map((r, i) => (
+              <div
+                key={r.eticheta}
+                className={`flex justify-between gap-4 py-3 ${i < datePublice.length - 1 ? "border-b border-line" : ""}`}
+              >
+                <dt className="shrink-0 text-sm text-ink-soft">{r.eticheta}</dt>
+                <dd className="text-right text-sm font-bold text-ink">{r.valoare}</dd>
               </div>
             ))}
-          </div>
-        </Card>
-      )}
+          </dl>
+        </section>
 
-      {(nevoi.length > 0 || oferte.length > 0) && (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          {nevoi.length > 0 && (
-            <Card>
-              <SectionLabel icon={<HelpCircle className="h-3.5 w-3.5" />}>Caută ajutor în</SectionLabel>
-              <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
-                {nevoi.map((n, i) => (
-                  <li key={i}>• {n.categories?.name_ro ?? ""} {n.nota && `— ${n.nota}`}</li>
-                ))}
-              </ul>
-            </Card>
-          )}
-          {oferte.length > 0 && (
-            <Card>
-              <SectionLabel icon={<HandHeart className="h-3.5 w-3.5" />}>Poate ajuta cu</SectionLabel>
-              <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
-                {oferte.map((o, i) => (
-                  <li key={i}>• {o.categories?.name_ro ?? ""} {o.nota && `— ${o.nota}`}</li>
-                ))}
-              </ul>
-            </Card>
-          )}
-        </div>
-      )}
-
-      {proiecte.length > 0 && (
-        <div className="mt-8">
-          <SectionLabel icon={<Images className="h-3.5 w-3.5" />}>Portofoliu</SectionLabel>
-          <div className="mt-3 grid gap-4 sm:grid-cols-3">
-            {proiecte.map((p) => (
-              <Link
-                key={p.id}
-                href={`/firma/${id}/portofoliu/${p.id}`}
-                className="lift-on-hover overflow-hidden rounded-xl border border-line bg-surface"
-              >
-                <div className="relative h-28 w-full bg-ink/5">
-                  {p.cover_url && <Image src={p.cover_url} alt={p.titlu} fill className="object-cover" unoptimized />}
-                </div>
-                <div className="p-3">
-                  <p className="text-sm font-medium text-ink">{p.titlu}</p>
-                  {p.locatie && <p className="text-xs text-ink-soft">{p.locatie}{p.an ? ` · ${p.an}` : ""}</p>}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="mt-8">
-        <SectionLabel icon={<Star className="h-3.5 w-3.5" />}>
-          Recenzii {company.rating_numar > 0 && `(${company.rating_numar})`}
-        </SectionLabel>
-
-        <div className="mt-4">
+        {/* ================= RECENZII ================= */}
+        <section className="flex flex-col gap-4">
+          <h2 className={titluSectiune}>
+            Recenzii{company.rating_numar > 0 ? ` (${company.rating_numar})` : ""}
+          </h2>
           <ReviewSection
             reviewedCompanyId={id}
             reviewerCompanyId={firmaVizitatorId}
@@ -528,7 +622,7 @@ export default async function CompanyPage({
             ratingNumar={company.rating_numar}
             motiv={motivRecenzie}
           />
-        </div>
+        </section>
       </div>
     </div>
   );

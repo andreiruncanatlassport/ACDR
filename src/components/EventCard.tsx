@@ -82,7 +82,7 @@ export function EventCard({
         </div>
         <div className="flex flex-1 flex-col p-5">
           <p className="stamp-label text-seal">{tipLabel}</p>
-          <h3 className="mt-1.5 font-display text-base font-semibold leading-snug text-ink">{event.titlu}</h3>
+          <h3 className="mt-1.5 text-base font-semibold leading-snug text-ink">{event.titlu}</h3>
 
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
             <Badge tone="neutral">

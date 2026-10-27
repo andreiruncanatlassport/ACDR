@@ -1,11 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Schibsted_Grotesk, Onest, IBM_Plex_Mono } from "next/font/google";
+import { Spectral, Rethink_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Identitatea din octombrie 2026: Schibsted Grotesk la titluri, Onest la text.
-// Ambele sunt fonturi variabile, cu diacriticele romanesti (s, t cu virgula) in latin-ext.
-const schibsted = Schibsted_Grotesk({ subsets: ["latin", "latin-ext"], variable: "--font-schibsted" });
-const onest = Onest({ subsets: ["latin", "latin-ext"], variable: "--font-onest" });
+// Directia „Oameni” (octombrie 2026): Spectral (serif editorial) la titlurile
+// mari, Rethink Sans la text si interfata. Ambele au diacriticele romanesti
+// (ș, ț cu virgula) in latin-ext. Spectral nu e variabil: incarcam doar
+// greutatile folosite, ca pagina sa ramana usoara pe telefon.
+const spectral = Spectral({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-spectral",
+});
+const rethink = Rethink_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-rethink" });
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], variable: "--font-plex-mono", weight: ["500", "600"] });
 import { SettingsProvider, settingsInitScript } from "@/lib/settings/context";
 import { Header } from "@/components/Header";
@@ -54,7 +61,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="ro" className={`h-full antialiased ${schibsted.variable} ${onest.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="ro" className={`h-full antialiased ${spectral.variable} ${rethink.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: settingsInitScript }} />
       </head>

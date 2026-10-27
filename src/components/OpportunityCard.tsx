@@ -71,7 +71,7 @@ export function OpportunityCard({
 
         <div className="flex flex-1 flex-col p-5">
           <p className="stamp-label text-seal">{tipLabel}</p>
-          <h3 className="mt-1.5 font-display text-base font-semibold leading-snug text-ink line-clamp-2">
+          <h3 className="mt-1.5 text-base font-semibold leading-snug text-ink line-clamp-2">
             {opportunity.titlu}
           </h3>
 

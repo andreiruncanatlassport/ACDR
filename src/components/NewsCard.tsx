@@ -44,7 +44,7 @@ export function NewsCard({
         </div>
         <div className="flex flex-1 flex-col p-5">
           <p className="stamp-label text-seal">{dataScurta(article.published_at)}</p>
-          <h3 className={`mt-1.5 font-display font-semibold leading-snug text-ink ${compact ? "text-base" : "text-lg"}`}>
+          <h3 className={`mt-1.5 font-semibold leading-snug text-ink ${compact ? "text-base" : "text-lg"}`}>
             {article.titlu}
           </h3>
           {article.rezumat && (

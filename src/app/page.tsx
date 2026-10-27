@@ -1,25 +1,35 @@
 import Link from "next/link";
-import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake, Building2, Briefcase } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ShieldCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { LinkButton } from "@/components/ui/Button";
-import { BrandMark } from "@/components/ui/BrandMark";
-import { RecentCompaniesTicker } from "@/components/RecentCompaniesTicker";
-import { HomeStats } from "@/components/HomeStats";
 import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 import { EventCard, type EventCardData } from "@/components/EventCard";
 import { CompanyCard } from "@/components/CompanyCard";
 import { OpportunityCard, type OpportunityCardData } from "@/components/OpportunityCard";
 import { MobileSlideCarousel } from "@/components/MobileSlideCarousel";
 import { alegeFirmeRotativ } from "@/lib/rotate";
-
-const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
+import { aziRomania, formatIso, primaZiLucratoare } from "@/lib/calendar-fiscal";
 
 // Cate firme aratam in preview-ul de pe homepage — tinut mic intentionat
 // (2-3), ca homepage-ul sa ramana un ecran de intrare compact, nu un al
 // doilea catalog. Lista completa e la un click distanta (butonul de mai jos).
 const NR_FIRME_PREVIEW = 3;
 const NR_OPORTUNITATI_PREVIEW = 3;
+
+/**
+ * Urmatorul termen „de 25” (D112, D300 lunar), mutat pe prima zi lucratoare.
+ * Il calculam aici, fara baza de date: obligatiile fiscale sunt vizibile doar
+ * utilizatorilor autentificati, iar homepage-ul trebuie sa arate ceva real si
+ * vizitatorilor.
+ */
+function urmatorulTermenDe25(azi: string): string {
+  const [an, luna] = azi.split("-").map(Number);
+  const luna25 = primaZiLucratoare(formatIso(an, luna, 25));
+  if (luna25 >= azi) return luna25;
+  return luna === 12 ? primaZiLucratoare(formatIso(an + 1, 1, 25)) : primaZiLucratoare(formatIso(an, luna + 1, 25));
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -54,6 +64,7 @@ export default async function HomePage() {
     { count: firmeCount },
     { count: domeniiCount },
     { data: judeteData },
+    { data: judeteFirmeData },
     { data: stiriData },
     { data: evenimenteData },
     { data: firmeData, error: firmeError },
@@ -62,6 +73,9 @@ export default async function HomePage() {
     supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("categories").select("id", { count: "exact", head: true }),
     supabase.from("judete").select("cod, nume"),
+    // Doar coloana judet_cod a firmelor aprobate: numaram judetele in care
+    // exista cel putin o firma (cifra cinstita, nu totalul de 42 de judete).
+    supabase.from("companies").select("judet_cod").eq("status", "approved"),
     supabase
       .from("news_articles")
       .select("slug, titlu, rezumat, imagine_url, published_at")
@@ -107,7 +121,9 @@ export default async function HomePage() {
   if (oportunitatiError) console.error("Homepage: eroare la incarcarea oportunitatilor:", oportunitatiError);
 
   const judeteMap = new Map(((judeteData as { cod: string; nume: string }[]) ?? []).map((j) => [j.cod, j.nume]));
-  const judeteCount = judeteMap.size;
+  const judeteCuFirme = new Set(
+    ((judeteFirmeData as { judet_cod: string | null }[]) ?? []).map((r) => r.judet_cod).filter(Boolean)
+  ).size;
 
   const stiri = (stiriData as NewsCardData[]) ?? [];
   const evenimente = (evenimenteData as EventCardData[]) ?? [];
@@ -135,7 +151,8 @@ export default async function HomePage() {
     judet_nume: c.judet_cod ? judeteMap.get(c.judet_cod) ?? null : null,
     domeniu_principal: null,
   }));
-
+  // Firma din exemplul „01”: cea mai recenta firma aprobata (date reale).
+  const firmaExemplu = firmeToate[0] ?? null;
 
   type OportunitateRand = Omit<
     OpportunityCardData,
@@ -161,133 +178,229 @@ export default async function HomePage() {
     company_logo_url: r.companies?.logo_url ?? null,
   }));
 
-  const pasi = [
-    { n: "01", icon: FileCheck2, title: t.home.step1Title, body: t.home.step1Body },
-    { n: "02", icon: Users, title: t.home.step2Title, body: t.home.step2Body },
-    { n: "03", icon: Handshake, title: t.home.step3Title, body: t.home.step3Body },
-  ];
+  // Termenul fiscal din exemplul „03”, impartit in zi + luna scurta.
+  const termen = urmatorulTermenDe25(aziRomania());
+  const termenData = new Date(`${termen}T12:00:00Z`);
+  const termenZi = termenData.getUTCDate();
+  const termenLuna = termenData
+    .toLocaleDateString(dateLocale, { month: "short", timeZone: "UTC" })
+    .replace(".", "");
 
-  const increderi = [
-    { icon: ShieldCheck, text: t.home.trust1 },
-    { icon: LockKeyhole, text: t.home.trust2 },
-    { icon: Users, text: t.home.trust3 },
+  const cifre = [
+    { valoare: firmeCount ?? 0, eticheta: t.home.statsCompanies },
+    { valoare: domeniiCount ?? 0, eticheta: t.home.statsDomains },
+    { valoare: judeteCuFirme, eticheta: t.home.statsCounties },
   ];
 
   return (
     <>
-      {/* ================= HERO ================= */}
-      <section className="hero-wash relative overflow-hidden border-b border-line">
-        <div aria-hidden className="absolute inset-0 grid-registry opacity-60" />
-        <div
-          aria-hidden
-          className="absolute -right-16 -top-20 hidden h-80 w-80 rounded-full bg-seal/10 blur-3xl sm:block"
-          style={{ animation: "float-a 10s ease-in-out infinite" }}
-        />
-        <div
-          aria-hidden
-          className="absolute -left-10 bottom-0 hidden h-56 w-56 rounded-full bg-teal/10 blur-3xl sm:block"
-          style={{ animation: "float-b 12s ease-in-out infinite" }}
-        />
-        <style>{`
-          @keyframes float-a { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-18px) rotate(6deg); } }
-          @keyframes float-b { 0%,100% { transform: translateY(0); } 50% { transform: translateY(14px); } }
-        `}</style>
+      {/* ================= HERO =================
+          Telefon: fotografia sus, pe toata latimea, apoi textul.
+          Desktop: textul in stanga, fotografia in dreapta, cu colturi rotunjite. */}
+      <section className="border-b border-line">
+        <div className="mx-auto grid max-w-6xl md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-14 md:px-5 md:py-14 lg:py-20">
+          <div className="relative aspect-[390/430] w-full overflow-hidden md:order-2 md:aspect-[4/5] md:rounded-[28px]">
+            <Image
+              src="/images/oameni/oameni-rugaciune-birou.jpg"
+              alt={t.home.heroPhotoAlt}
+              fill
+              priority
+              sizes="(min-width: 768px) 45vw, 100vw"
+              className="object-cover object-[60%_30%]"
+            />
+          </div>
 
-        <div className="relative mx-auto grid max-w-6xl gap-8 px-5 py-8 md:grid-cols-[1.1fr_0.9fr] md:items-center md:gap-14 md:py-16">
-          <div className="animate-fade-up">
-            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-seal to-ember px-3.5 py-1.5 text-white shadow-[var(--shadow-md)]">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
-              </span>
-              <span className="stamp-label">{t.home.eyebrow}</span>
-            </div>
-
-            <h1 className="mt-4 max-w-xl text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-              <span className="text-gradient-seal">{t.home.titleAccent}</span>
-              <br />
-              {t.home.titleRest}
+          <div className="px-5 pb-8 pt-7 md:order-1 md:px-0 md:py-0">
+            <p className="stamp-label text-seal">{t.home.title}</p>
+            <h1 className="mt-3 max-w-xl text-[2.5rem] leading-[1.1] text-ink sm:text-5xl lg:text-[3.75rem]">
+              {t.home.heroTitleBefore} <em className="italic text-seal">{t.home.heroTitleAccent}</em>.
             </h1>
+            <p className="mt-4 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft">{t.home.heroSubtitle}</p>
 
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-soft sm:text-base">
-              {t.home.subtitle}
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2.5">
-              {!user && (
-                <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-                  {t.home.ctaPrimary}
-                  <ArrowRight className="h-4 w-4" />
+            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap">
+              {user ? (
+                <LinkButton href="/cercuri" variant="primary" size="lg" className="min-h-[52px]">
+                  {t.home.concrete2Link}
+                </LinkButton>
+              ) : (
+                <LinkButton href="/inregistrare" variant="primary" size="lg" className="min-h-[52px]">
+                  {t.home.heroJoin}
                 </LinkButton>
               )}
-              <LinkButton href="/catalog" variant="secondary" size="lg">
-                <Search className="h-4 w-4" />
-                {t.home.ctaSecondary}
+              <LinkButton href="/catalog" variant="secondary" size="lg" className="min-h-[52px]">
+                {t.home.heroBrowse}
               </LinkButton>
             </div>
 
-            <HomeStats firme={firmeCount ?? 0} domenii={domeniiCount ?? 0} judete={judeteCount ?? 0} />
-          </div>
-
-          <div className="relative hidden justify-center md:flex md:justify-end">
-            <div className="relative flex h-56 w-56 items-center justify-center rounded-[48px] border border-line bg-surface shadow-[var(--shadow-lg)] sm:h-72 sm:w-72">
-              <BrandMark className="h-16 w-16 sm:h-20 sm:w-20" />
-              <span className="absolute -bottom-3.5 rounded-full gradient-seal px-4 py-1.5 text-xs font-semibold text-primary-content shadow-[var(--shadow-lg)]">
-                {t.home.stampLabel}
-              </span>
-            </div>
+            {/* Cifre reale din baza de date, fara animatie de numarare */}
+            <dl className="mt-8 grid grid-cols-3 border-y border-line py-5 tabular-nums">
+              {cifre.map((c, i) => (
+                <div key={c.eticheta} className={i > 0 ? "border-l border-line pl-4" : ""}>
+                  <dt className="sr-only">{c.eticheta}</dt>
+                  <dd className="font-display text-[2.125rem] leading-none text-ink">
+                    {c.valoare.toLocaleString(dateLocale)}
+                  </dd>
+                  <dd aria-hidden="true" className="mt-1.5 text-[0.8125rem] leading-snug text-ink-soft">{c.eticheta}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
+      </section>
+
+      {/* ================= CE FACI AICI, CONCRET =================
+          Trei randuri, fiecare cu o bucata reala din produs, nu cu o iconita. */}
+      <section className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-[0.8fr_1.2fr] md:gap-14 md:py-16">
+        <div>
+          <h2 className="text-[1.875rem] leading-tight text-ink md:sticky md:top-24 md:text-4xl">{t.home.concreteTitle}</h2>
+        </div>
+
+        <ol className="flex flex-col gap-9">
+          <li className="flex flex-col gap-3">
+            <p className="flex items-baseline gap-3">
+              <span className="font-display text-xl italic text-seal">01</span>
+              <span className="text-[1.1875rem] font-bold text-ink">{t.home.concrete1Title}</span>
+            </p>
+            <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.concrete1Body}</p>
+            {firmaExemplu && (
+              <Link
+                href={`/firma/${firmaExemplu.slug ?? firmaExemplu.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 transition-colors hover:border-seal"
+              >
+                <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-olive-pale text-[0.9375rem] font-extrabold text-seal">
+                  {firmaExemplu.logo_url ? (
+                    <Image src={firmaExemplu.logo_url} alt="" fill className="object-cover" unoptimized />
+                  ) : (
+                    firmaExemplu.denumire.slice(0, 2).toUpperCase()
+                  )}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-[0.9375rem] font-bold text-ink">{firmaExemplu.denumire}</span>
+                  <span className="truncate text-[0.8125rem] text-ink-soft">
+                    {[firmaExemplu.localitate, firmaExemplu.judet_cod ? judeteMap.get(firmaExemplu.judet_cod) : null]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </span>
+                </span>
+                <span className="inline-flex h-[26px] shrink-0 items-center gap-1 rounded-full bg-olive-pale px-2.5 text-xs font-bold text-seal">
+                  <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.4} />
+                  ANAF
+                </span>
+              </Link>
+            )}
+            <Link href="/catalog" className="inline-flex min-h-11 items-center gap-1.5 self-start text-[0.9375rem] font-bold text-seal hover:underline">
+              {t.home.concrete1Link}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </li>
+
+          <li className="flex flex-col gap-3">
+            <p className="flex items-baseline gap-3">
+              <span className="font-display text-xl italic text-seal">02</span>
+              <span className="text-[1.1875rem] font-bold text-ink">{t.home.concrete2Title}</span>
+            </p>
+            <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.concrete2Body}</p>
+            <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-olive-pale text-seal">
+                <Users className="h-5 w-5" strokeWidth={2} />
+              </span>
+              <span className="text-[0.875rem] leading-snug text-ink-soft">{t.home.concrete2Note}</span>
+            </div>
+            <Link href="/cercuri" className="inline-flex min-h-11 items-center gap-1.5 self-start text-[0.9375rem] font-bold text-seal hover:underline">
+              {t.home.concrete2Link}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </li>
+
+          <li className="flex flex-col gap-3">
+            <p className="flex items-baseline gap-3">
+              <span className="font-display text-xl italic text-seal">03</span>
+              <span className="text-[1.1875rem] font-bold text-ink">{t.home.concrete3Title}</span>
+            </p>
+            <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.concrete3Body}</p>
+            <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+              {[
+                { cod: "D112", text: t.home.fiscalD112 },
+                { cod: "D300", text: t.home.fiscalD300 },
+              ].map((r, i) => (
+                <div key={r.cod} className={`flex items-center gap-3 px-3.5 py-3 ${i === 0 ? "border-b border-line" : ""}`}>
+                  <span className="w-11 shrink-0 text-center tabular-nums">
+                    <span className="block font-display text-[1.375rem] leading-6 text-ink">{termenZi}</span>
+                    <span className="block text-[0.6875rem] font-bold uppercase text-ink-soft">{termenLuna}</span>
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-[0.9375rem] font-bold text-ink">{r.cod}</span>
+                    <span className="text-[0.8125rem] text-ink-soft">{r.text}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <Link
+              href={user ? "/dashboard/calendar-fiscal" : "/login"}
+              className="inline-flex min-h-11 items-center gap-1.5 self-start text-[0.9375rem] font-bold text-seal hover:underline"
+            >
+              {t.home.concrete3Link}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </li>
+        </ol>
       </section>
 
       {/* ================= PREVIEW FIRME ================= */}
-      <section className="relative mx-auto max-w-6xl px-5 py-8 md:py-12">
-        <div className="max-w-xl">
-          <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
-          <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-            <Building2 className="h-5 w-5 text-seal" strokeWidth={1.8} />
-            {t.home.companiesTitle}
-          </h2>
-        </div>
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.companiesTitle}</h2>
+            <Link href="/catalog" className="hidden shrink-0 text-sm font-bold text-seal hover:underline sm:block">
+              {t.home.companiesSeeAll}
+            </Link>
+          </div>
 
-        {firmePreview.length === 0 ? (
-          <p className="mt-5 text-sm text-ink-soft">{t.home.companiesEmpty}</p>
-        ) : (
-          <>
-            <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
-              {firmePreview.map((c) => (
-                <CompanyCard key={c.id} company={c} />
-              ))}
-            </div>
-            <div className="mt-5 sm:hidden">
-              <MobileSlideCarousel items={firmePreview.map((c) => <CompanyCard key={c.id} company={c} />)} />
-            </div>
-          </>
-        )}
+          {firmePreview.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.companiesEmpty}</p>
+          ) : (
+            <>
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
+                {firmePreview.map((c) => (
+                  <CompanyCard key={c.id} company={c} />
+                ))}
+              </div>
+              <div className="mt-6 sm:hidden">
+                <MobileSlideCarousel items={firmePreview.map((c) => <CompanyCard key={c.id} company={c} />)} />
+              </div>
+            </>
+          )}
 
-        <div className="mt-6 flex justify-center">
-          <LinkButton href="/catalog" variant="secondary" size="lg">
-            {t.home.companiesExploreButton}
-            <ArrowRight className="h-4 w-4" />
-          </LinkButton>
+          <div className="mt-6 sm:hidden">
+            <LinkButton href="/catalog" variant="secondary" size="lg" className="w-full min-h-[52px]">
+              {t.home.companiesExploreButton}
+            </LinkButton>
+          </div>
         </div>
       </section>
 
-      {/* ================= RECENT VERIFICATE ================= */}
-      <RecentCompaniesTicker />
+      {/* ================= FOTOGRAFIE EDITORIALA ================= */}
+      <figure className="mx-auto max-w-6xl md:px-5">
+        <div className="relative aspect-[390/292] w-full overflow-hidden md:aspect-[21/9] md:rounded-[28px]">
+          <Image
+            src="/images/oameni/oameni-notite-birou.jpg"
+            alt={t.home.photoAlt}
+            fill
+            sizes="(min-width: 1152px) 1112px, 100vw"
+            className="object-cover md:object-[50%_40%]"
+          />
+        </div>
+        <figcaption className="px-5 pt-3.5 font-display text-[1.1875rem] italic leading-relaxed text-seal md:px-0 md:text-2xl">
+          {t.home.photoCaption}
+        </figcaption>
+      </figure>
 
       {/* ================= OPORTUNITATI ================= */}
-      <section className="relative border-t border-line bg-surface/40">
-        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+      <section className="mt-10 border-t border-line md:mt-14">
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
           <div className="flex items-end justify-between gap-4">
-            <div className="max-w-xl">
-              <p className="stamp-label text-seal">{t.home.opportunitiesEyebrow}</p>
-              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-                <Briefcase className="h-5 w-5 text-seal" strokeWidth={1.8} />
-                {t.home.opportunitiesTitle}
-              </h2>
-            </div>
-            <Link href="/oportunitati" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.opportunitiesTitle}</h2>
+            <Link href="/oportunitati" className="shrink-0 text-sm font-bold text-seal hover:underline">
               {t.home.opportunitiesSeeAll}
             </Link>
           </div>
@@ -296,12 +409,12 @@ export default async function HomePage() {
             <p className="mt-5 text-sm text-ink-soft">{t.home.opportunitiesEmpty}</p>
           ) : (
             <>
-              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
                 {oportunitatiPreview.map((o) => (
                   <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
                 ))}
               </div>
-              <div className="mt-5 sm:hidden">
+              <div className="mt-6 sm:hidden">
                 <MobileSlideCarousel
                   items={oportunitatiPreview.map((o) => (
                     <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
@@ -313,55 +426,41 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ================= STIRI ================= */}
-      <section className="relative border-t border-line bg-surface/60">
-        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
-          <div className="flex items-end justify-between gap-4">
-            <div className="max-w-xl">
-              <p className="stamp-label text-seal">{t.home.newsEyebrow}</p>
-              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-                <Newspaper className="h-5 w-5 text-seal" strokeWidth={1.8} />
-                {t.home.newsTitle}
-              </h2>
-            </div>
-            <Link href="/stiri" className="shrink-0 text-sm font-semibold text-seal hover:underline">
-              {t.home.newsSeeAll}
+      {/* ================= VERSET + CERCURI =================
+          Banda masline (bg-navy: masline pe tema deschisa, masline adanc pe cea
+          intunecata). Pe desktop, fotografia in stanga si textul in dreapta. */}
+      <section className="bg-navy text-white">
+        <div className="mx-auto grid max-w-6xl md:grid-cols-2 md:items-center md:gap-12 md:px-5 md:py-14">
+          <div className="relative aspect-[390/250] w-full overflow-hidden md:aspect-square md:rounded-[28px]">
+            <Image
+              src="/images/oameni/oameni-biblie-masa.jpg"
+              alt={t.home.versePhotoAlt}
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-3.5 px-5 pb-9 pt-8 md:px-0 md:py-0">
+            <p className="font-display text-[2.125rem] font-medium leading-[1.12] md:text-5xl">{t.home.verse}</p>
+            <p className="text-sm font-semibold text-white/75">{t.home.verseRef}</p>
+            <p className="max-w-md text-base leading-relaxed text-white/85">{t.home.verseBody}</p>
+            <Link
+              href="/cercuri"
+              className="mt-2 inline-flex min-h-12 items-center justify-center gap-1.5 self-start rounded-[14px] border-[1.5px] border-white px-5 text-[0.9375rem] font-bold text-white transition-colors hover:bg-white hover:text-[#1F3A2E]"
+            >
+              {t.home.concrete2Link}
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
-          {stiri.length === 0 ? (
-            <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
-          ) : (
-            <>
-              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
-                {stiri.map((s) => (
-                  <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
-                ))}
-              </div>
-              <div className="mt-5 sm:hidden">
-                <MobileSlideCarousel
-                  items={stiri.map((s) => (
-                    <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
-                  ))}
-                />
-              </div>
-            </>
-          )}
         </div>
       </section>
 
       {/* ================= EVENIMENTE ================= */}
-      <section className="relative border-t border-line">
-        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+      <section>
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
           <div className="flex items-end justify-between gap-4">
-            <div className="max-w-xl">
-              <p className="stamp-label text-seal">{t.home.eventsEyebrow}</p>
-              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-                <CalendarDays className="h-5 w-5 text-seal" strokeWidth={1.8} />
-                {t.home.eventsTitle}
-              </h2>
-            </div>
-            <Link href="/evenimente" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.eventsTitle}</h2>
+            <Link href="/evenimente" className="shrink-0 text-sm font-bold text-seal hover:underline">
               {t.home.eventsSeeAll}
             </Link>
           </div>
@@ -370,12 +469,12 @@ export default async function HomePage() {
             <p className="mt-5 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
           ) : (
             <>
-              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
                 {evenimente.map((e) => (
                   <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
                 ))}
               </div>
-              <div className="mt-5 sm:hidden">
+              <div className="mt-6 sm:hidden">
                 <MobileSlideCarousel
                   items={evenimente.map((e) => (
                     <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
@@ -387,88 +486,67 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ================= CUM FUNCTIONEAZA ================= */}
-      <section id="cum-functioneaza" className="relative mx-auto max-w-6xl px-5 py-12 md:py-16">
-        <div className="max-w-xl">
-          <p className="stamp-label text-seal">{t.nav.howItWorks}</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            {t.home.howTitle}
-          </h2>
-        </div>
+      {/* ================= STIRI ================= */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.newsTitle}</h2>
+            <Link href="/stiri" className="shrink-0 text-sm font-bold text-seal hover:underline">
+              {t.home.newsSeeAll}
+            </Link>
+          </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {pasi.map((step, i) => (
-            <div
-              key={step.n}
-              className="lift-on-hover block-base relative overflow-hidden p-5 md:p-6"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div
-                aria-hidden
-                className={`absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-10 ${STEP_TINTS[i]}`}
-              />
-              <div className="flex items-center justify-between">
-                <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-[var(--shadow-md)] ${
-                    i === 0 ? "gradient-seal text-primary-content" : i === 1 ? "bg-teal text-white" : "bg-gold text-[#121614]"
-                  }`}
-                >
-                  <step.icon className="h-5 w-5" strokeWidth={1.8} />
-                </div>
-                <span className="font-mono-num text-2xl font-bold text-ink/8">{step.n}</span>
+          {stiri.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
+          ) : (
+            <>
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
+                {stiri.map((s) => (
+                  <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                ))}
               </div>
-              <h3 className="relative mt-4 text-base font-semibold text-ink">{step.title}</h3>
-              <p className="relative mt-1.5 text-sm leading-relaxed text-ink-soft">{step.body}</p>
-            </div>
-          ))}
+              <div className="mt-6 sm:hidden">
+                <MobileSlideCarousel
+                  items={stiri.map((s) => (
+                    <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                  ))}
+                />
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* ================= INCREDERE ================= */}
-      <section className="relative overflow-hidden border-y border-line bg-navy">
-        <BrandMark variant="white" className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 opacity-[0.06]" />
-
-        <div className="relative mx-auto max-w-6xl px-5 py-14 md:py-20">
-          <div className="max-w-xl">
-            <p className="stamp-label text-white/75">{t.home.trustEyebrow}</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              {t.home.trustTitle}
-            </h2>
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {increderi.map((item, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-white/10 bg-white/4 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-gold/50 hover:bg-white/6"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold shadow-[var(--shadow-md)]">
-                  <item.icon className="h-5 w-5 text-[#121614]" strokeWidth={1.8} />
-                </div>
-                <p className="mt-4 text-sm leading-relaxed text-white/70">{item.text}</p>
+      {/* ================= VALORI ================= */}
+      <section className="border-t border-line">
+        <div className="mx-auto grid max-w-6xl gap-6 px-5 py-10 md:grid-cols-[0.8fr_1.2fr] md:gap-14 md:py-16">
+          <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.valuesTitle}</h2>
+          <dl className="border-b border-line">
+            {t.home.values.map((v) => (
+              <div key={v.name} className="grid grid-cols-[8rem_1fr] items-baseline gap-3 border-t border-line py-3 md:grid-cols-[11rem_1fr]">
+                <dt className="font-display text-[1.1875rem] italic text-ink">{v.name}</dt>
+                <dd className="text-sm leading-snug text-ink-soft">{v.desc}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
 
-      {/* ================= CTA FINAL ================= */}
+      {/* ================= CTA FINAL =================
+          Singurul bloc auriu din pagina: invitatia pentru omul nou. */}
       {!user && (
-        <section className="hero-wash relative overflow-hidden">
-          <div className="relative mx-auto max-w-3xl px-5 py-14 text-center md:py-20">
-            <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(31,58,46,0.15)]" />
-            <h2 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-              {t.home.ctaFinalTitle}
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft sm:text-base">
-              {t.home.ctaFinalBody}
-            </p>
-            <div className="mt-6 flex justify-center gap-3">
-              <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-                {t.home.ctaPrimary}
-                <ArrowRight className="h-4 w-4" />
-              </LinkButton>
+        <section className="mx-auto max-w-6xl px-5 pb-12 md:pb-20">
+          <div className="flex flex-col gap-3 rounded-[22px] bg-gold px-5 py-7 text-[#121614] md:flex-row md:items-center md:justify-between md:gap-10 md:px-10 md:py-10">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-[1.875rem] leading-tight md:text-4xl">{t.home.ctaFinalTitle}</h2>
+              <p className="max-w-lg text-base leading-relaxed">{t.home.ctaFinalBody}</p>
             </div>
+            <Link
+              href="/inregistrare"
+              className="mt-1.5 inline-flex min-h-[52px] shrink-0 items-center justify-center rounded-[14px] bg-[#121614] px-7 text-base font-bold text-white transition-opacity hover:opacity-90"
+            >
+              {t.home.ctaFinalButton}
+            </Link>
           </div>
         </section>
       )}

@@ -36,7 +36,7 @@ export function MemberCard({ member }: { member: MemberCardData }) {
           )}
         </div>
         <div className="mt-3.5 flex items-center gap-1.5">
-          <h3 className="font-display text-base font-semibold text-ink">{member.nume_complet}</h3>
+          <h3 className="text-base font-semibold text-ink">{member.nume_complet}</h3>
         </div>
         {member.verificat && (
           <div className="mt-1">

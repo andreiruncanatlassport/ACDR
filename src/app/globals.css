@@ -4,9 +4,11 @@
 
 /* ==========================================================================
    ACDR — sistem de design (identitatea din octombrie 2026)
-   Masline + aur folosit rar, pe fundal "piatra". Fara gradienturi decorative:
-   blocurile se disting prin suprafete albe pe fundal cald si contururi fine.
-   Titluri: Schibsted Grotesk. Text: Onest. Vezi 06-identitate-vizuala.md.
+   Directia „Oameni”: masline + aur folosit rar, pe fundal cald de hartie,
+   cu fotografii reale. Fara gradienturi decorative: blocurile se disting prin
+   suprafete albe pe fundal cald si contururi fine.
+   Titluri mari (h1, h2): Spectral. Text si interfata: Rethink Sans.
+   Vezi 06-identitate-vizuala.md.
 
    Numele tokenilor (navy, seal, ember...) sunt pastrate din versiunea veche,
    ca sa nu schimbam sute de clase in componente; valorile sunt cele noi:
@@ -51,8 +53,8 @@
 :root {
   /* ---- LIGHT ---- */
   --ink: #121614;          /* cerneala */
-  --ink-soft: #5a635e;     /* salvie */
-  --paper: #f1f2ee;        /* piatra — fundalul aplicatiei */
+  --ink-soft: #4e544c;     /* salvie inchisa — 7:1 pe hartie */
+  --paper: #f7f5f0;        /* hartie calda — fundalul aplicatiei */
   --paper-white: #ffffff;
   --surface: #ffffff;
   --surface-raised: #ffffff;
@@ -64,8 +66,8 @@
   --teal-light: #4e8f6e;
   --violet: #4b5d7a;
   --rust: #b4331f;
-  --line: #daddd6;
-  --line-strong: #c5cac2;
+  --line: #dedad0;
+  --line-strong: #c9c3b6;
   --primary: #1f3a2e;
   --primary-content: #ffffff;
   --gold: #c8963e;
@@ -73,8 +75,8 @@
   --gold-ink: #6e4e14;
   --olive-pale: #e3eae5;
 
-  --font-family-display: var(--font-schibsted), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-sans: var(--font-onest), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: var(--font-spectral), Georgia, "Times New Roman", serif;
+  --font-family-sans: var(--font-rethink), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-family-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --base-font-scale: 1;
@@ -125,8 +127,8 @@
 
 /* ---- Variante de font (panoul de Setari) ---- */
 .font-sistem {
-  --font-family-sans: var(--font-onest), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-display: var(--font-schibsted), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-sans: var(--font-rethink), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: var(--font-spectral), Georgia, "Times New Roman", serif;
 }
 .font-clasic {
   --font-family-sans: Georgia, "Times New Roman", serif;
@@ -158,13 +160,20 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3, h4 {
+/* Titlurile mari sunt serif (Spectral), cu greutate medie: tonul editorial
+   al directiei „Oameni”. Titlurile mici (h3, h4: carduri, liste, formulare)
+   raman pe fontul de text, ingrosate, ca sa se citeasca bine la marimi mici. */
+h1, h2 {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-weight: 500;
 }
 
-h1 { letter-spacing: -0.025em; font-weight: 800; }
+h3, h4 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
 
 .font-mono-num {
   font-family: var(--font-mono);

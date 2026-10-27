@@ -26,7 +26,7 @@ export function Footer() {
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
               <BrandMark variant="white" className="h-9 w-9 shrink-0" />
-              <span className="font-display text-base font-black leading-tight tracking-tight text-white">
+              <span className="font-sans text-base font-extrabold leading-tight tracking-tight text-white">
                 ACDR
               </span>
             </div>

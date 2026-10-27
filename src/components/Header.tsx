@@ -47,7 +47,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <Link href="/" className="group flex items-center gap-2.5" title="ACDR">
           <BrandMark variant="white" className="h-8 w-8 shrink-0" />
-          <span className="hidden font-display text-lg font-black tracking-tight text-white sm:inline">
+          <span className="hidden font-sans text-lg font-extrabold tracking-tight text-white sm:inline">
             ACDR
           </span>
         </Link>

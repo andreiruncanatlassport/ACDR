@@ -72,6 +72,37 @@ interface Dictionary {
     opportunitiesTitle: string;
     opportunitiesSeeAll: string;
     opportunitiesEmpty: string;
+    heroTitleBefore: string;
+    heroTitleAccent: string;
+    heroSubtitle: string;
+    heroJoin: string;
+    heroBrowse: string;
+    heroPhotoAlt: string;
+    statsCompanies: string;
+    statsDomains: string;
+    statsCounties: string;
+    concreteTitle: string;
+    concrete1Title: string;
+    concrete1Body: string;
+    concrete1Link: string;
+    concrete2Title: string;
+    concrete2Body: string;
+    concrete2Link: string;
+    concrete2Note: string;
+    concrete3Title: string;
+    concrete3Body: string;
+    concrete3Link: string;
+    fiscalD112: string;
+    fiscalD300: string;
+    photoCaption: string;
+    photoAlt: string;
+    verse: string;
+    verseRef: string;
+    verseBody: string;
+    versePhotoAlt: string;
+    valuesTitle: string;
+    values: { name: string; desc: string }[];
+    ctaFinalButton: string;
   };
   footer: {
     tagline: string;
@@ -305,8 +336,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       trust1: "Fiecare firmă e verificată prin ANAF înainte să apară public în catalog.",
       trust2: "Datele personale ale reprezentanților rămân private — vizibile doar prin conexiune sau mesaj direct.",
       trust3: "Membri, oportunități și evenimente reale, nu doar un formular de contact.",
-      ctaFinalTitle: "Gata să-ți găsești următorul colaborator?",
-      ctaFinalBody: "Înregistrarea durează câteva minute. Datele firmei se preiau automat de la ANAF.",
+      ctaFinalTitle: "Fă primul pas",
+      ctaFinalBody: "Creează-ți contul și adaugă firma. O verificăm la ANAF și apare în catalog.",
       quickNavTitle: "Explorează comunitatea",
       quickNavFirme: "Firme",
       quickNavMembri: "Membri",
@@ -322,6 +353,47 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       opportunitiesTitle: "Oportunități",
       opportunitiesSeeAll: "Toate oportunitățile →",
       opportunitiesEmpty: "Nicio oportunitate deschisă momentan.",
+      heroTitleBefore: "Niciun antreprenor credincios nu mai merge",
+      heroTitleAccent: "singur",
+      heroSubtitle:
+        "O comunitate de lideri care îmbină credința, afacerea și impactul în societate. Firme verificate, cercuri locale, oameni pe care îi poți suna.",
+      heroJoin: "Alătură-te",
+      heroBrowse: "Vezi firmele",
+      heroPhotoAlt: "Antreprenor care se roagă la biroul lui, cu Biblia deschisă",
+      statsCompanies: "firme verificate",
+      statsDomains: "domenii de activitate",
+      statsCounties: "județe acoperite",
+      concreteTitle: "Ce faci aici, concret",
+      concrete1Title: "Găsești firme verificate",
+      concrete1Body: "Fiecare firmă e verificată la ANAF înainte să apară în catalog.",
+      concrete1Link: "Deschide catalogul",
+      concrete2Title: "Intri într-un cerc",
+      concrete2Body: "Un grup mic de antreprenori din orașul tău, care se vede regulat.",
+      concrete2Link: "Vezi cercurile",
+      concrete2Note: "Între 3 și 12 oameni, cu întâlniri, angajamente și discuții doar ale voastre.",
+      concrete3Title: "Nu mai ratezi un termen",
+      concrete3Body: "Calendarul fiscal îți arată doar declarațiile care se aplică firmei tale.",
+      concrete3Link: "Deschide calendarul fiscal",
+      fiscalD112: "Contribuții și impozit pe venit",
+      fiscalD300: "Decont de TVA, lunar",
+      photoCaption: "Credința nu rămâne la ușa biroului.",
+      photoAlt: "Antreprenor care își notează planurile lângă Biblia deschisă",
+      verse: "„Mai bine doi decât unul.”",
+      verseRef: "Eclesiastul 4:9",
+      verseBody:
+        "De aceea ACDR se organizează în cercuri locale: antreprenori care se întâlnesc regulat, își spun planurile și se țin de cuvânt.",
+      versePhotoAlt: "Biblie pe o masă de lucru, lângă un carnet cu notițe și o cafea",
+      valuesTitle: "Valorile ACDR",
+      values: [
+        { name: "Hărnicie", desc: "Execuție excelentă și disciplină." },
+        { name: "Integritate", desc: "Încrederea este capital." },
+        { name: "Învățare", desc: "Creștere continuă prin adaptare." },
+        { name: "Perseverență", desc: "Reziliență și focus pe termen lung." },
+        { name: "Respect", desc: "Demnitate pentru oameni și parteneri." },
+        { name: "Generozitate", desc: "Investim timp, resurse și experiență." },
+        { name: "Colaborare", desc: "Parteneriate sănătoase, fără competiție toxică." },
+      ],
+      ctaFinalButton: "Creează cont",
     },
     footer: {
       tagline: "Registrul antreprenorilor din România — găsește colaboratori verificați, în orice domeniu.",
@@ -553,8 +625,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       trust1: "Every company is verified via ANAF before it appears publicly in the catalog.",
       trust2: "Representatives' personal data stays private — visible only via a connection or direct message.",
       trust3: "Real members, opportunities, and events — not just a contact form.",
-      ctaFinalTitle: "Ready to find your next collaborator?",
-      ctaFinalBody: "Registration takes a few minutes. Company data is pulled automatically from ANAF.",
+      ctaFinalTitle: "Take the first step",
+      ctaFinalBody: "Create your account and add your company. We check it with ANAF and it appears in the catalog.",
       quickNavTitle: "Explore the community",
       quickNavFirme: "Companies",
       quickNavMembri: "Members",
@@ -570,6 +642,47 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       opportunitiesTitle: "Opportunities",
       opportunitiesSeeAll: "All opportunities →",
       opportunitiesEmpty: "No open opportunities right now.",
+      heroTitleBefore: "No Christian entrepreneur has to walk",
+      heroTitleAccent: "alone",
+      heroSubtitle:
+        "A community of leaders who bring together faith, business and impact in society. Verified companies, local circles, people you can call.",
+      heroJoin: "Join us",
+      heroBrowse: "See companies",
+      heroPhotoAlt: "An entrepreneur praying at his desk, with an open Bible",
+      statsCompanies: "verified companies",
+      statsDomains: "fields of activity",
+      statsCounties: "counties covered",
+      concreteTitle: "What you actually do here",
+      concrete1Title: "Find verified companies",
+      concrete1Body: "Every company is checked with ANAF before it appears in the catalog.",
+      concrete1Link: "Open the catalog",
+      concrete2Title: "Join a circle",
+      concrete2Body: "A small group of entrepreneurs from your city who meet regularly.",
+      concrete2Link: "See circles",
+      concrete2Note: "3 to 12 people, with meetings, commitments and conversations of your own.",
+      concrete3Title: "Never miss a deadline",
+      concrete3Body: "The tax calendar shows only the filings that apply to your company.",
+      concrete3Link: "Open the tax calendar",
+      fiscalD112: "Social contributions and income tax",
+      fiscalD300: "VAT return, monthly",
+      photoCaption: "Faith doesn't stay at the office door.",
+      photoAlt: "An entrepreneur writing down his plans next to an open Bible",
+      verse: "“Two are better than one.”",
+      verseRef: "Ecclesiastes 4:9",
+      verseBody:
+        "That is why ACDR is organised in local circles: entrepreneurs who meet regularly, share their plans and keep their word.",
+      versePhotoAlt: "A Bible on a work desk, next to a notebook and a coffee",
+      valuesTitle: "ACDR values",
+      values: [
+        { name: "Diligence", desc: "Excellent execution and discipline." },
+        { name: "Integrity", desc: "Trust is capital." },
+        { name: "Learning", desc: "Continuous growth through adaptation." },
+        { name: "Perseverance", desc: "Resilience and long-term focus." },
+        { name: "Respect", desc: "Dignity for people and partners." },
+        { name: "Generosity", desc: "We invest time, resources and experience." },
+        { name: "Collaboration", desc: "Healthy partnerships, without toxic competition." },
+      ],
+      ctaFinalButton: "Create account",
     },
     footer: {
       tagline: "Romania's entrepreneur registry — find verified collaborators, in any field.",

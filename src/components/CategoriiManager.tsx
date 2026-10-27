@@ -119,7 +119,7 @@ export function CategoriiManager() {
     <div className="space-y-6">
       {tree.map((parinte) => (
         <Card key={parinte.id}>
-          <h3 className="font-display text-base font-semibold text-ink">{parinte.name_ro}</h3>
+          <h3 className="text-base font-semibold text-ink">{parinte.name_ro}</h3>
           <div className="mt-2">
             <RandCategorie categorie={parinte} coduri={coduri} onAdd={adauga} onRemove={elimina} />
             {parinte.children.map((copil) => (

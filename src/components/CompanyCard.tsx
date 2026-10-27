@@ -67,7 +67,7 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
             {company.domeniu_principal && (
               <p className="stamp-label truncate text-seal">{company.domeniu_principal}</p>
             )}
-            <h3 className="mt-1 truncate font-display text-base font-semibold leading-snug text-ink">
+            <h3 className="mt-1 truncate text-base font-semibold leading-snug text-ink">
               {company.denumire}
             </h3>
           </div>
