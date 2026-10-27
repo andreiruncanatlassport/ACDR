@@ -250,95 +250,65 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ================= CE GASESTI IN ACDR =================
-          Ce face platforma in primul rand: firme, proiecte, oameni.
-          Cercurile si calendarul fiscal sunt doar mentionate, la final. */}
-      <section className="mx-auto grid max-w-6xl gap-6 px-5 py-12 md:grid-cols-[0.8fr_1.2fr] md:gap-14 md:py-16">
-        <h2 className="text-[1.875rem] leading-tight text-ink md:sticky md:top-24 md:self-start md:text-4xl">
-          {t.home.coreTitle}
-        </h2>
-
-        <div>
-          <ol className="flex flex-col divide-y divide-line border-y border-line">
-            <li className="flex flex-col gap-2.5 py-6">
-              <p className="flex items-baseline gap-3">
-                <span className="font-display text-xl italic text-seal">01</span>
-                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core1Title}</span>
-              </p>
-              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core1Body}</p>
-              {firmaExemplu && (
-                <Link
-                  href={`/firma/${firmaExemplu.slug ?? firmaExemplu.id}`}
-                  className="mt-1 flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 transition-colors hover:border-seal"
-                >
-                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-olive-pale text-[0.9375rem] font-extrabold text-seal">
-                    {firmaExemplu.logo_url ? (
-                      <Image src={firmaExemplu.logo_url} alt="" fill className="object-cover" unoptimized />
-                    ) : (
-                      firmaExemplu.denumire.slice(0, 2).toUpperCase()
-                    )}
-                  </span>
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-[0.9375rem] font-bold text-ink">{firmaExemplu.denumire}</span>
-                    <span className="truncate text-[0.8125rem] text-ink-soft">
-                      {[firmaExemplu.localitate, firmaExemplu.judet_cod ? judeteMap.get(firmaExemplu.judet_cod) : null]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </span>
-                  </span>
-                  <span className="inline-flex h-[26px] shrink-0 items-center gap-1 rounded-full bg-olive-pale px-2.5 text-xs font-bold text-seal">
-                    <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.4} />
-                    ANAF
-                  </span>
-                </Link>
-              )}
-              <Link href="/catalog" className={linkSectiune}>
-                {t.home.core1Link}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </li>
-
-            <li className="flex flex-col gap-2.5 py-6">
-              <p className="flex items-baseline gap-3">
-                <span className="font-display text-xl italic text-seal">02</span>
-                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core2Title}</span>
-              </p>
-              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core2Body}</p>
-              <Link href="/oportunitati" className={linkSectiune}>
-                {t.home.core2Link}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </li>
-
-            <li className="flex flex-col gap-2.5 py-6">
-              <p className="flex items-baseline gap-3">
-                <span className="font-display text-xl italic text-seal">03</span>
-                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core3Title}</span>
-              </p>
-              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core3Body}</p>
-              <Link href="/membri" className={linkSectiune}>
-                {t.home.core3Link}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </li>
-          </ol>
-
-          {/* Unelte in plus: doar mentionate, fara accent */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-2 text-sm text-ink-soft">
-            <span>{t.home.extrasLabel}</span>
-            <Link
-              href="/cercuri"
-              className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-seal"
-            >
-              {t.home.extrasCircles}
-            </Link>
-            <Link
-              href={user ? "/dashboard/calendar-fiscal" : "/login"}
-              className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-seal"
-            >
-              {t.home.extrasCalendar}
+      {/* ================= EVENIMENTE ================= */}
+      <section>
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.eventsTitle}</h2>
+            <Link href="/evenimente" className="shrink-0 text-sm font-bold text-seal hover:underline">
+              {t.home.eventsSeeAll}
             </Link>
           </div>
+
+          {evenimente.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
+          ) : (
+            <>
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
+                {evenimente.map((e) => (
+                  <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
+                ))}
+              </div>
+              <div className="mt-6 sm:hidden">
+                <MobileSlideCarousel
+                  items={evenimente.map((e) => (
+                    <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
+                  ))}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* ================= STIRI ================= */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.newsTitle}</h2>
+            <Link href="/stiri" className="shrink-0 text-sm font-bold text-seal hover:underline">
+              {t.home.newsSeeAll}
+            </Link>
+          </div>
+
+          {stiri.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
+          ) : (
+            <>
+              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
+                {stiri.map((s) => (
+                  <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                ))}
+              </div>
+              <div className="mt-6 sm:hidden">
+                <MobileSlideCarousel
+                  items={stiri.map((s) => (
+                    <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                  ))}
+                />
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -435,70 +405,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ================= EVENIMENTE ================= */}
-      <section>
-        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.eventsTitle}</h2>
-            <Link href="/evenimente" className="shrink-0 text-sm font-bold text-seal hover:underline">
-              {t.home.eventsSeeAll}
-            </Link>
-          </div>
-
-          {evenimente.length === 0 ? (
-            <p className="mt-5 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
-          ) : (
-            <>
-              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
-                {evenimente.map((e) => (
-                  <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
-                ))}
-              </div>
-              <div className="mt-6 sm:hidden">
-                <MobileSlideCarousel
-                  items={evenimente.map((e) => (
-                    <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
-                  ))}
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* ================= STIRI ================= */}
-      <section className="border-t border-line">
-        <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.newsTitle}</h2>
-            <Link href="/stiri" className="shrink-0 text-sm font-bold text-seal hover:underline">
-              {t.home.newsSeeAll}
-            </Link>
-          </div>
-
-          {stiri.length === 0 ? (
-            <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
-          ) : (
-            <>
-              <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-3">
-                {stiri.map((s) => (
-                  <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
-                ))}
-              </div>
-              <div className="mt-6 sm:hidden">
-                <MobileSlideCarousel
-                  items={stiri.map((s) => (
-                    <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
-                  ))}
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </section>
-
       {/* ================= VALORI ================= */}
-      <section className="border-t border-line">
+      <section>
         <div className="mx-auto grid max-w-6xl gap-6 px-5 py-10 md:grid-cols-[0.8fr_1.2fr] md:gap-14 md:py-16">
           <h2 className="text-[1.875rem] leading-tight text-ink md:text-4xl">{t.home.valuesTitle}</h2>
           <dl className="border-b border-line">
@@ -509,6 +417,100 @@ export default async function HomePage() {
               </div>
             ))}
           </dl>
+        </div>
+      </section>
+
+      {/* ================= CE GASESTI IN ACDR =================
+          Ce face platforma in primul rand: firme, proiecte, oameni.
+          Cercurile si calendarul fiscal sunt doar mentionate. Sta jos, inainte de invitatie. */}
+      <section className="border-t border-line">
+        <div className="mx-auto grid max-w-6xl gap-6 px-5 py-12 md:grid-cols-[0.8fr_1.2fr] md:gap-14 md:py-16">
+        <h2 className="text-[1.875rem] leading-tight text-ink md:sticky md:top-24 md:self-start md:text-4xl">
+          {t.home.coreTitle}
+        </h2>
+
+        <div>
+          <ol className="flex flex-col divide-y divide-line border-y border-line">
+            <li className="flex flex-col gap-2.5 py-6">
+              <p className="flex items-baseline gap-3">
+                <span className="font-display text-xl italic text-seal">01</span>
+                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core1Title}</span>
+              </p>
+              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core1Body}</p>
+              {firmaExemplu && (
+                <Link
+                  href={`/firma/${firmaExemplu.slug ?? firmaExemplu.id}`}
+                  className="mt-1 flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 transition-colors hover:border-seal"
+                >
+                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-olive-pale text-[0.9375rem] font-extrabold text-seal">
+                    {firmaExemplu.logo_url ? (
+                      <Image src={firmaExemplu.logo_url} alt="" fill className="object-cover" unoptimized />
+                    ) : (
+                      firmaExemplu.denumire.slice(0, 2).toUpperCase()
+                    )}
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-[0.9375rem] font-bold text-ink">{firmaExemplu.denumire}</span>
+                    <span className="truncate text-[0.8125rem] text-ink-soft">
+                      {[firmaExemplu.localitate, firmaExemplu.judet_cod ? judeteMap.get(firmaExemplu.judet_cod) : null]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </span>
+                  </span>
+                  <span className="inline-flex h-[26px] shrink-0 items-center gap-1 rounded-full bg-olive-pale px-2.5 text-xs font-bold text-seal">
+                    <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.4} />
+                    ANAF
+                  </span>
+                </Link>
+              )}
+              <Link href="/catalog" className={linkSectiune}>
+                {t.home.core1Link}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </li>
+
+            <li className="flex flex-col gap-2.5 py-6">
+              <p className="flex items-baseline gap-3">
+                <span className="font-display text-xl italic text-seal">02</span>
+                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core2Title}</span>
+              </p>
+              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core2Body}</p>
+              <Link href="/oportunitati" className={linkSectiune}>
+                {t.home.core2Link}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </li>
+
+            <li className="flex flex-col gap-2.5 py-6">
+              <p className="flex items-baseline gap-3">
+                <span className="font-display text-xl italic text-seal">03</span>
+                <span className="text-[1.1875rem] font-bold text-ink">{t.home.core3Title}</span>
+              </p>
+              <p className="text-[0.9375rem] leading-relaxed text-ink-soft">{t.home.core3Body}</p>
+              <Link href="/membri" className={linkSectiune}>
+                {t.home.core3Link}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </li>
+          </ol>
+
+          {/* Unelte in plus: doar mentionate, fara accent */}
+          <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-2 text-sm text-ink-soft">
+            <span>{t.home.extrasLabel}</span>
+            <Link
+              href="/cercuri"
+              className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-seal"
+            >
+              {t.home.extrasCircles}
+            </Link>
+            <Link
+              href={user ? "/dashboard/calendar-fiscal" : "/login"}
+              className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-seal"
+            >
+              {t.home.extrasCalendar}
+            </Link>
+          </div>
+        </div>
         </div>
       </section>
 
