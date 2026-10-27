@@ -173,8 +173,15 @@ export default async function HomePage() {
   // Strat de culoare peste fotografii (masline adanc): pe telefon se intuneca
   // de jos in sus, unde sta textul; pe desktop, de la stanga la dreapta.
   // Culori fixe, nu tokeni de tema: textul de deasupra e alb in ambele teme.
+  // Stratul acopera doar zona cu text, ca restul fotografiei sa ramana clar.
   const stratFoto =
-    "bg-[linear-gradient(to_top,rgba(19,36,28,0.96)_0%,rgba(19,36,28,0.84)_40%,rgba(19,36,28,0.3)_72%,rgba(19,36,28,0.08)_100%)] md:bg-[linear-gradient(to_right,rgba(19,36,28,0.95)_0%,rgba(19,36,28,0.8)_36%,rgba(19,36,28,0.25)_68%,rgba(19,36,28,0)_100%)]";
+    "bg-[linear-gradient(to_top,rgba(19,36,28,0.94)_0%,rgba(19,36,28,0.78)_38%,rgba(19,36,28,0.15)_66%,rgba(19,36,28,0)_100%)] md:bg-[linear-gradient(to_right,rgba(19,36,28,0.92)_0%,rgba(19,36,28,0.72)_34%,rgba(19,36,28,0.08)_62%,rgba(19,36,28,0)_100%)]";
+  // Pe telefon fotografia sta sus, clara, si se topeste in culoarea benzii doar la baza.
+  const fadeTelefon =
+    "bg-[linear-gradient(to_bottom,rgba(19,36,28,0)_0%,rgba(19,36,28,0)_55%,rgba(19,36,28,0.7)_80%,#13241C_100%)]";
+  // Varianta in oglinda (text in dreapta pe desktop), pentru banda cu versetul.
+  const stratFotoDreapta =
+    "bg-[linear-gradient(to_top,rgba(19,36,28,0.94)_0%,rgba(19,36,28,0.78)_38%,rgba(19,36,28,0.15)_66%,rgba(19,36,28,0)_100%)] md:bg-[linear-gradient(to_left,rgba(19,36,28,0.92)_0%,rgba(19,36,28,0.72)_34%,rgba(19,36,28,0.08)_62%,rgba(19,36,28,0)_100%)]";
 
   const linkSectiune =
     "inline-flex min-h-11 items-center gap-1.5 self-start text-[0.9375rem] font-bold text-seal hover:underline";
@@ -184,17 +191,22 @@ export default async function HomePage() {
       {/* ================= HERO =================
           Fotografia e fundalul intregului ecran; textul sta pe stratul de culoare. */}
       <section className="relative isolate overflow-hidden bg-[#13241C] text-white">
-        <Image
-          src="/images/oameni/oameni-birou-scris.jpg"
-          alt={t.home.heroPhotoAlt}
-          fill
-          priority
-          sizes="100vw"
-          className="-z-20 object-cover object-[52%_20%] md:object-[50%_18%]"
-        />
-        <div aria-hidden className={`absolute inset-0 -z-10 ${stratFoto}`} />
+        {/* Telefon: fotografia sus, clara, iar textul dedesubt. Desktop: fotografia pe tot fundalul. */}
+        <div className="absolute inset-x-0 top-0 -z-20 h-[360px] md:inset-0 md:h-auto">
+          <Image
+            src="/images/oameni/oameni-grup-discutie.jpg"
+            alt={t.home.heroPhotoAlt}
+            fill
+            priority
+            sizes="100vw"
+            quality={90}
+            className="object-cover object-[64%_22%] md:object-[60%_35%]"
+          />
+          <div aria-hidden className={`absolute inset-0 md:hidden ${fadeTelefon}`} />
+        </div>
+        <div aria-hidden className={`absolute inset-0 -z-10 hidden md:block ${stratFoto}`} />
 
-        <div className="mx-auto flex min-h-[640px] max-w-6xl flex-col justify-end px-5 pb-8 pt-48 md:min-h-[620px] md:justify-center md:py-20 lg:min-h-[700px]">
+        <div className="mx-auto flex max-w-6xl flex-col justify-end px-5 pb-8 pt-[300px] md:min-h-[640px] md:justify-center md:py-20 lg:min-h-[700px]">
           <div className="max-w-xl">
             <p className="stamp-label text-[#E6C88F]">{t.home.title}</p>
             <h1 className="mt-3 text-[2.5rem] leading-[1.08] text-white sm:text-5xl lg:text-[3.75rem]">
@@ -397,21 +409,25 @@ export default async function HomePage() {
       {/* ================= VERSET =================
           Fotografia pe toata latimea, sub un strat de culoare masline. */}
       <section className="relative isolate overflow-hidden bg-[#13241C] text-white">
-        <Image
-          src="/images/oameni/oameni-biblie-masa.jpg"
-          alt={t.home.versePhotoAlt}
-          fill
-          sizes="100vw"
-          className="-z-20 object-cover object-[42%_55%]"
-        />
-        <div aria-hidden className={`absolute inset-0 -z-10 ${stratFoto}`} />
-        <div className="mx-auto flex min-h-[480px] max-w-6xl flex-col justify-end gap-3.5 px-5 pb-10 pt-40 md:min-h-[520px] md:justify-center md:py-20">
+        <div className="absolute inset-x-0 top-0 -z-20 h-[300px] md:inset-0 md:h-auto">
+          <Image
+            src="/images/oameni/oameni-biblie-deschisa.jpg"
+            alt={t.home.versePhotoAlt}
+            fill
+            sizes="100vw"
+            quality={90}
+            className="object-cover object-[28%_62%] md:object-[30%_60%]"
+          />
+          <div aria-hidden className={`absolute inset-0 md:hidden ${fadeTelefon}`} />
+        </div>
+        <div aria-hidden className={`absolute inset-0 -z-10 hidden md:block ${stratFotoDreapta}`} />
+        <div className="mx-auto flex max-w-6xl flex-col justify-end gap-3.5 px-5 pb-10 pt-[260px] md:min-h-[560px] md:items-end md:justify-center md:py-20 md:text-right">
           <p className="max-w-xl font-display text-[2.375rem] font-medium leading-[1.1] md:text-6xl">{t.home.verse}</p>
           <p className="text-sm font-semibold text-[#E6C88F]">{t.home.verseRef}</p>
-          <p className="max-w-md text-base leading-relaxed text-white/85">{t.home.verseBody}</p>
+          <p className="max-w-md text-base leading-relaxed text-white/85 md:ml-auto">{t.home.verseBody}</p>
           <Link
             href="/membri"
-            className="mt-2 inline-flex min-h-12 items-center justify-center gap-1.5 self-start rounded-[14px] border-[1.5px] border-white px-5 text-[0.9375rem] font-bold text-white transition-colors hover:bg-white hover:text-[#13241C]"
+            className="mt-2 inline-flex min-h-12 items-center justify-center gap-1.5 self-start rounded-[14px] md:self-end border-[1.5px] border-white px-5 text-[0.9375rem] font-bold text-white transition-colors hover:bg-white hover:text-[#13241C]"
           >
             {t.home.core3Link}
             <ArrowRight className="h-4 w-4" />
@@ -501,15 +517,19 @@ export default async function HomePage() {
       {!user && (
         <section className="mx-auto max-w-6xl px-5 pb-12 md:pb-20">
           <div className="relative isolate overflow-hidden rounded-[24px] bg-[#13241C] text-white">
-            <Image
-              src="/images/oameni/oameni-birou-lampa.jpg"
-              alt={t.home.ctaFinalPhotoAlt}
-              fill
-              sizes="(min-width: 1152px) 1112px, 100vw"
-              className="-z-20 object-cover object-[55%_35%]"
-            />
-            <div aria-hidden className={`absolute inset-0 -z-10 ${stratFoto}`} />
-            <div className="flex min-h-[440px] flex-col justify-end gap-3 p-6 md:min-h-[400px] md:max-w-xl md:justify-center md:p-12">
+            <div className="absolute inset-x-0 top-0 -z-20 h-[340px] md:inset-0 md:h-auto">
+              <Image
+                src="/images/oameni/oameni-lumina-biserica.jpg"
+                alt={t.home.ctaFinalPhotoAlt}
+                fill
+                sizes="(min-width: 1152px) 1112px, 100vw"
+                quality={90}
+                className="object-cover object-[66%_55%] md:object-[64%_50%]"
+              />
+              <div aria-hidden className={`absolute inset-0 md:hidden ${fadeTelefon}`} />
+            </div>
+            <div aria-hidden className={`absolute inset-0 -z-10 hidden md:block ${stratFoto}`} />
+            <div className="flex flex-col justify-end gap-3 p-6 pt-[300px] md:min-h-[480px] md:pt-12 md:max-w-xl md:justify-center md:p-12">
               <h2 className="text-[2rem] leading-tight text-white md:text-5xl">{t.home.ctaFinalTitle}</h2>
               <p className="text-base leading-relaxed text-white/85">{t.home.ctaFinalBody}</p>
               <Link
