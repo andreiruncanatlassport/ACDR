@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { CheckCircle2, Building2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
@@ -10,6 +9,7 @@ import { SkeletonPage } from "@/components/ui/Skeleton";
 import { LinkButton } from "@/components/ui/Button";
 import { StepCont } from "./steps/StepCont";
 import { StepProfil } from "./steps/StepProfil";
+import { AuthTabs } from "@/components/AuthTabs";
 
 export default function InregistrarePage() {
   const router = useRouter();
@@ -97,18 +97,16 @@ export default function InregistrarePage() {
         </p>
       </div>
 
-      <Card variant="raised" className="mt-6">
+      {etapa === "cont" && (
+        <div className="mt-6">
+          <AuthTabs activ="register" />
+        </div>
+      )}
+
+      <Card variant="raised" className={etapa === "cont" ? "mt-3" : "mt-6"}>
         {etapa === "profil" ? <StepProfil onDone={dupaProfil} /> : <StepCont onDone={dupaCont} />}
       </Card>
 
-      {etapa === "cont" && (
-        <p className="mt-6 text-center text-sm text-ink-soft">
-          Ai deja cont?{" "}
-          <Link href="/login" className="font-semibold text-seal hover:underline">
-            Autentifică-te
-          </Link>
-        </p>
-      )}
     </div>
   );
 }

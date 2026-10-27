@@ -113,12 +113,10 @@ export function Header({ userEmail, rol }: HeaderProps) {
             </>
           ) : (
             <>
-              <Link href="/login" className={linkClass("/login")}>
-                {t.nav.login}
-              </Link>
               <SettingsMenu />
-              <LinkButton href="/inregistrare" variant="gold" size="sm">
-                {t.nav.register}
+              {/* Un singur buton; pagina de cont are tabul Autentificare si tabul Cont nou */}
+              <LinkButton href="/login" variant="gold" size="sm">
+                {t.nav.signIn}
               </LinkButton>
             </>
           )}
@@ -181,11 +179,8 @@ export function Header({ userEmail, rol }: HeaderProps) {
               </>
             ) : (
               <>
-                <Link href="/login" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
-                  {t.nav.login}
-                </Link>
-                <LinkButton href="/inregistrare" variant="gold" size="sm" className="w-fit">
-                  {t.nav.register}
+                <LinkButton href="/login" variant="gold" size="sm" className="w-fit">
+                  {t.nav.signIn}
                 </LinkButton>
               </>
             )}

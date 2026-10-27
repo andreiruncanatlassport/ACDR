@@ -23,6 +23,8 @@ interface Dictionary {
     logout: string;
     circles: string;
     fiscalCalendar: string;
+    signIn: string;
+    registerTab: string;
   };
   home: {
     eyebrow: string;
@@ -270,6 +272,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       logout: "Deconectare",
       circles: "Cercuri",
       fiscalCalendar: "Calendar fiscal",
+      signIn: "Intră în cont",
+      registerTab: "Cont nou",
     },
     home: {
       eyebrow: "Comunitatea Antreprenorilor Creștini",
@@ -516,6 +520,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       logout: "Log out",
       circles: "Circles",
       fiscalCalendar: "Tax calendar",
+      signIn: "Sign in",
+      registerTab: "New account",
     },
     home: {
       eyebrow: "The Christian Entrepreneurs Community",

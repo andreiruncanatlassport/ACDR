@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError } from "@/components/ui/Field";
@@ -10,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { useSettings } from "@/lib/settings/context";
 import { TurnstileWidget } from "@/components/TurnstileWidget";
+import { AuthTabs } from "@/components/AuthTabs";
 
 export default function LoginPage() {
   const { t } = useSettings();
@@ -61,7 +61,10 @@ export default function LoginPage() {
       <Card variant="raised" className="w-full">
         <div className="text-center">
           <BrandMark className="mx-auto h-10 w-10" />
-          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-ink">{t.auth.login}</h1>
+          <h1 className="sr-only">{t.auth.login}</h1>
+        </div>
+        <div className="mt-5">
+          <AuthTabs activ="login" />
         </div>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -97,12 +100,6 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink-soft">
-          {t.auth.noAccount}{" "}
-          <Link href="/inregistrare" className="font-medium text-seal hover:underline">
-            {t.nav.register}
-          </Link>
-        </p>
       </Card>
     </div>
   );
