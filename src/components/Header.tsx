@@ -91,6 +91,9 @@ export function Header({ userEmail, rol }: HeaderProps) {
                   {t.nav.admin}
                 </Link>
               )}
+              <Link href="/cercuri" className={linkClass("/cercuri")}>
+                {t.nav.circles}
+              </Link>
               <Link href="/mesaje" className={linkClass("/mesaje")}>
                 {t.nav.messages}
                 {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
@@ -159,6 +162,12 @@ export function Header({ userEmail, rol }: HeaderProps) {
                     {t.nav.admin}
                   </Link>
                 )}
+                <Link href="/cercuri" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+                  {t.nav.circles}
+                </Link>
+                <Link href="/dashboard/calendar-fiscal" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+                  {t.nav.fiscalCalendar}
+                </Link>
                 <Link href="/mesaje" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.messages}
                   {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}

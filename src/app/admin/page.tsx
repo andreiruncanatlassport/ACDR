@@ -13,6 +13,8 @@ import {
   TrendingUp,
   ArrowRight,
   Settings2,
+  UsersRound,
+  CalendarClock,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminStats } from "@/lib/admin-stats";
@@ -53,6 +55,8 @@ const TOOLURI = [
   { href: "/admin/recenzii", icon: Star, titlu: "Recenzii", desc: "Moderează recenziile firmelor" },
   { href: "/admin/stiri", icon: Newspaper, titlu: "Știri", desc: "Publică și editează articole" },
   { href: "/admin/evenimente", icon: CalendarDays, titlu: "Evenimente", desc: "Creează și gestionează evenimente" },
+  { href: "/admin/cercuri", icon: UsersRound, titlu: "Cercuri", desc: "Creează cercuri și numește liderii" },
+  { href: "/admin/calendar-fiscal", icon: CalendarClock, titlu: "Calendar fiscal", desc: "Termenele ANAF folosite în calendar" },
   { href: "/admin/categorii", icon: Settings2, titlu: "Categorii & CAEN", desc: "Taxonomia de domenii" },
 ];
 

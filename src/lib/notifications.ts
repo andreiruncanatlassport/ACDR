@@ -22,7 +22,10 @@ export type TipNotificare =
   | "firma_aprobata"
   | "mesaj_nou"
   | "oportunitate_raspuns"
-  | "eveniment_reminder";
+  | "eveniment_reminder"
+  | "cerc_cerere"
+  | "cerc_acceptat"
+  | "cerc_intalnire";
 
 interface CreeazaNotificareInput {
   profileId: string;
@@ -38,9 +41,21 @@ function urlSite(): string {
   return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
 }
 
+/** Textul scris de utilizatori ajunge in email: il scapam ca sa nu poata injecta HTML sau linkuri. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /** Sablon de email simplu, in tonul platformei. */
-function sablonEmail(titlu: string, mesaj: string | undefined, link: string | undefined): string {
-  const linkComplet = link ? `${urlSite()}${link}` : urlSite();
+function sablonEmail(titluBrut: string, mesajBrut: string | undefined, link: string | undefined): string {
+  const titlu = escapeHtml(titluBrut);
+  const mesaj = mesajBrut ? escapeHtml(mesajBrut) : undefined;
+  const linkComplet = escapeHtml(link ? `${urlSite()}${link}` : urlSite());
   return `<!doctype html>
 <html lang="ro">
   <body style="margin:0;padding:24px;background:#f6f6f4;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ExternalLink, Bookmark, Building2, ArrowRight, Handshake } from "lucide-react";
+import { Pencil, ExternalLink, Bookmark, Building2, ArrowRight, Handshake, CalendarClock } from "lucide-react";
+import { incarcaCalendar } from "@/lib/calendar-fiscal-server";
+import { adaugaZile, aziRomania, cheieTermen, formatData } from "@/lib/calendar-fiscal";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
@@ -126,6 +128,16 @@ export default async function DashboardPage() {
         ? "Completează descrierea"
         : "Completează profilul";
 
+  // ---- Calendar fiscal: urmatoarele 3 termene nebifate ale primei firme ----
+  const primaFirma = companies[0] ?? null;
+  const azi = aziRomania();
+  const calendar = primaFirma
+    ? await incarcaCalendar(supabase, primaFirma.id, azi, adaugaZile(azi, 30), primaFirma.tva_activ)
+    : null;
+  const termeneUrmatoare = calendar
+    ? calendar.termene.filter((t) => !calendar.depuse.has(cheieTermen(t.obligatie.id, t.scadenta))).slice(0, 3)
+    : [];
+
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
       {!emailVerificat && user.email && <EmailUnverifiedBanner email={user.email} />}
@@ -166,7 +178,43 @@ export default async function DashboardPage() {
         <LinkButton href="/mesaje" variant="secondary" size="sm">Mesajele mele</LinkButton>
         <LinkButton href="/membri" variant="secondary" size="sm">Caută membri</LinkButton>
         <LinkButton href="/oportunitati" variant="secondary" size="sm">Oportunități</LinkButton>
+        <LinkButton href="/cercuri" variant="secondary" size="sm">Cercuri</LinkButton>
+        <LinkButton href="/dashboard/calendar-fiscal" variant="secondary" size="sm">Calendar fiscal</LinkButton>
       </div>
+
+      {/* Calendar fiscal: urmatoarele termene ale primei firme */}
+      {primaFirma && calendar && (
+        <section className="mt-8">
+          <SectionLabel icon={<CalendarClock className="h-3.5 w-3.5" />}>Termene fiscale</SectionLabel>
+          {!calendar.salvat ? (
+            <Link
+              href={`/dashboard/calendar-fiscal?firma=${primaFirma.id}`}
+              className="lift-on-hover mt-3 flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-sm)]"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-ink">Vezi ce declarații are de depus {primaFirma.denumire}</p>
+                <p className="mt-0.5 text-xs text-ink-soft">Răspunzi la 7 întrebări și primești termenele, pe care le poți pune în calendarul telefonului.</p>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-ink-soft" />
+            </Link>
+          ) : (
+            <Link href={`/dashboard/calendar-fiscal?firma=${primaFirma.id}`} className="lift-on-hover block-base mt-3 block divide-y divide-line px-4">
+              {termeneUrmatoare.length === 0 && (
+                <p className="py-3 text-sm text-ink-soft">Niciun termen în următoarele 30 de zile.</p>
+              )}
+              {termeneUrmatoare.map((t) => (
+                <div key={t.obligatie.id + t.scadenta} className="flex items-center justify-between gap-3 py-3">
+                  <span className="min-w-0 truncate text-sm font-semibold text-ink">
+                    {t.obligatie.formular ?? t.obligatie.denumire}
+                    <span className="font-normal text-ink-soft"> · {t.perioada}</span>
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold text-ink-soft">{formatData(t.scadenta)}</span>
+                </div>
+              ))}
+            </Link>
+          )}
+        </section>
+      )}
 
       {/* Firmele mele */}
       <section className="mt-8">
