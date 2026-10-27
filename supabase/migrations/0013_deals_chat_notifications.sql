@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — Înțelegeri: chat, negociere pe versiuni, clauze, etape, notificări
+-- ACDR — Înțelegeri: chat, negociere pe versiuni, clauze, etape, notificări
 -- Ruleaza acest fisier AL TREISPREZECELEA, dupa 0012.
 --
 -- Model:

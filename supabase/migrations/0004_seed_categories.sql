@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — taxonomie de categorii + mapare CAEN (varianta DRAFT)
+-- ACDR — taxonomie de categorii + mapare CAEN (varianta DRAFT)
 -- Ruleaza acest fisier AL PATRULEA.
 --
 -- IMPORTANT: codurile CAEN de mai jos sunt mai ales la nivel de DIVIZIE

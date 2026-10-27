@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — recenzii deblocate de colaborările finalizate
+-- ACDR — recenzii deblocate de colaborările finalizate
 -- Ruleaza acest fisier AL CINCISPREZECELEA, dupa 0014.
 --
 -- IDEEA: pana acum, orice recenzie cerea o dovada incarcata manual (contract,

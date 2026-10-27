@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — schema initial
+-- ACDR — schema initial
 -- Ruleaza acest fisier primul, in Supabase Dashboard > SQL Editor > New query.
 -- ============================================================================
 

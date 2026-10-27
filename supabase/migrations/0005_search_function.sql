@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — functie de cautare pe raza de deservire
+-- ACDR — functie de cautare pe raza de deservire
 -- Ruleaza acest fisier AL CINCILEA (ultimul).
 --
 -- Gaseste firmele APROBATE a caror raza de deservire (raza_deservire_km, in

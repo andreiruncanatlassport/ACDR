@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — acceptul Termenilor & Conditiilor la inregistrare
+-- ACDR — acceptul Termenilor & Conditiilor la inregistrare
 -- Ruleaza acest fisier AL NOUALEA, dupa 0001-0008.
 -- ============================================================================
 

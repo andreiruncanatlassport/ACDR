@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — reparare recursivitate infinita in politicile pentru cereri de oferta
+-- ACDR — reparare recursivitate infinita in politicile pentru cereri de oferta
 -- Ruleaza acest fisier AL DOISPREZECELEA, dupa 0011.
 --
 -- PROBLEMA (prinsa la testare, inainte de productie):

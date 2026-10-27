@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — extinderi: profil bogat, portofoliu, recenzii, favorite, reauth
+-- ACDR — extinderi: profil bogat, portofoliu, recenzii, favorite, reauth
 -- Ruleaza acest fisier AL SASELEA, dupa 0001-0005.
 -- ============================================================================
 

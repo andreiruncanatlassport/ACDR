@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — verificare email PROPRIE (optionala, neblocanta)
+-- ACDR — verificare email PROPRIE (optionala, neblocanta)
 -- Ruleaza acest fisier AL ZECELEA, dupa 0001-0009.
 --
 -- De ce nu folosim indicatorul Supabase (auth.users.email_confirmed_at):

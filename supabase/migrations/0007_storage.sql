@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — Storage: buckete pentru poze si documente
+-- ACDR — Storage: buckete pentru poze si documente
 -- Ruleaza acest fisier AL SAPTELEA, dupa 0006.
 --
 -- Doua bucket-uri:

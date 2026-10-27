@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — bibliotecă de clauze pentru înțelegeri
+-- ACDR — bibliotecă de clauze pentru înțelegeri
 -- Ruleaza acest fisier AL PAISPREZECELEA, dupa 0013.
 --
 -- ATENTIE: acestea sunt formulari de LUCRU, gandite sa ajute doua firme sa se
@@ -27,7 +27,7 @@ insert into public.clause_templates (category_id, titlu, continut, ordine) value
    'În cazul întârzierii plății peste termenul convenit, prestatorul poate solicita penalități de 0,1% din suma restantă pentru fiecare zi de întârziere, fără a depăși valoarea sumei restante.', 40),
 
   (null, 'Modificări ale lucrării',
-   'Orice modificare a obiectului, prețului sau termenelor se face doar prin acordul ambelor părți, exprimat printr-o nouă versiune a acestei înțelegeri în platforma Breasla.', 50),
+   'Orice modificare a obiectului, prețului sau termenelor se face doar prin acordul ambelor părți, exprimat printr-o nouă versiune a acestei înțelegeri în platforma ACDR.', 50),
 
   (null, 'Confidențialitate',
    'Părțile se obligă să păstreze confidențialitatea informațiilor comerciale, tehnice și financiare la care au acces în cadrul acestei colaborări, atât pe durata acesteia, cât și 2 ani după încheierea ei.', 60),
@@ -42,7 +42,7 @@ insert into public.clause_templates (category_id, titlu, continut, ordine) value
    'Părțile vor încerca soluționarea pe cale amiabilă a oricărei neînțelegeri. În caz contrar, litigiul va fi soluționat de instanțele competente de la sediul pârâtului.', 90),
 
   (null, 'Comunicare',
-   'Comunicarea între părți se face prin platforma Breasla, email sau telefon, la datele de contact din profilurile firmelor. Deciziile importante se consemnează în scris.', 100);
+   'Comunicarea între părți se face prin platforma ACDR, email sau telefon, la datele de contact din profilurile firmelor. Deciziile importante se consemnează în scris.', 100);
 
 -- --------------------------------------------------------------------------
 -- Clauze pe CATEGORII

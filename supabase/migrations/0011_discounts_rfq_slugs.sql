@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — reduceri intre membri, marime proiect, slug-uri SEO, cereri de oferta
+-- ACDR — reduceri intre membri, marime proiect, slug-uri SEO, cereri de oferta
 -- Ruleaza acest fisier AL UNSPREZECELEA, dupa 0001-0010.
 -- ============================================================================
 

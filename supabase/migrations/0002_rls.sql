@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — Row Level Security (RLS)
+-- ACDR — Row Level Security (RLS)
 -- Ruleaza acest fisier AL DOILEA, dupa 0001_schema.sql.
 --
 -- Idee de baza:

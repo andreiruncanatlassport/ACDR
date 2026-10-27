@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — timp de raspuns + rating denormalizat (pentru catalog rapid)
+-- ACDR — timp de raspuns + rating denormalizat (pentru catalog rapid)
 -- Ruleaza acest fisier AL OPTULEA, dupa 0001-0007.
 -- ============================================================================
 

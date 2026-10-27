@@ -1,5 +1,5 @@
 -- ============================================================================
--- Breasla — lista judetelor Romaniei (41 judete + Municipiul Bucuresti)
+-- ACDR — lista judetelor Romaniei (41 judete + Municipiul Bucuresti)
 -- Ruleaza acest fisier AL TREILEA.
 -- ============================================================================
 
