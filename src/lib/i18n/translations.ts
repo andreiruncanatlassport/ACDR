@@ -81,21 +81,20 @@ interface Dictionary {
     statsCompanies: string;
     statsDomains: string;
     statsCounties: string;
-    concreteTitle: string;
-    concrete1Title: string;
-    concrete1Body: string;
-    concrete1Link: string;
-    concrete2Title: string;
-    concrete2Body: string;
-    concrete2Link: string;
-    concrete2Note: string;
-    concrete3Title: string;
-    concrete3Body: string;
-    concrete3Link: string;
-    fiscalD112: string;
-    fiscalD300: string;
-    photoCaption: string;
-    photoAlt: string;
+    coreTitle: string;
+    core1Title: string;
+    core1Body: string;
+    core1Link: string;
+    core2Title: string;
+    core2Body: string;
+    core2Link: string;
+    core3Title: string;
+    core3Body: string;
+    core3Link: string;
+    extrasLabel: string;
+    extrasCircles: string;
+    extrasCalendar: string;
+    ctaFinalPhotoAlt: string;
     verse: string;
     verseRef: string;
     verseBody: string;
@@ -356,32 +355,31 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       heroTitleBefore: "Niciun antreprenor credincios nu mai merge",
       heroTitleAccent: "singur",
       heroSubtitle:
-        "O comunitate de lideri care îmbină credința, afacerea și impactul în societate. Firme verificate, cercuri locale, oameni pe care îi poți suna.",
+        "O comunitate de lideri care îmbină credința, afacerea și impactul în societate. Firme verificate, proiecte reale, oameni pe care îi poți suna.",
       heroJoin: "Alătură-te",
       heroBrowse: "Vezi firmele",
-      heroPhotoAlt: "Antreprenor care se roagă la biroul lui, cu Biblia deschisă",
+      heroPhotoAlt: "Antreprenor care își scrie planurile la birou, lângă Biblia deschisă",
       statsCompanies: "firme verificate",
       statsDomains: "domenii de activitate",
       statsCounties: "județe acoperite",
-      concreteTitle: "Ce faci aici, concret",
-      concrete1Title: "Găsești firme verificate",
-      concrete1Body: "Fiecare firmă e verificată la ANAF înainte să apară în catalog.",
-      concrete1Link: "Deschide catalogul",
-      concrete2Title: "Intri într-un cerc",
-      concrete2Body: "Un grup mic de antreprenori din orașul tău, care se vede regulat.",
-      concrete2Link: "Vezi cercurile",
-      concrete2Note: "Între 3 și 12 oameni, cu întâlniri, angajamente și discuții doar ale voastre.",
-      concrete3Title: "Nu mai ratezi un termen",
-      concrete3Body: "Calendarul fiscal îți arată doar declarațiile care se aplică firmei tale.",
-      concrete3Link: "Deschide calendarul fiscal",
-      fiscalD112: "Contribuții și impozit pe venit",
-      fiscalD300: "Decont de TVA, lunar",
-      photoCaption: "Credința nu rămâne la ușa biroului.",
-      photoAlt: "Antreprenor care își notează planurile lângă Biblia deschisă",
+      coreTitle: "Ce găsești în ACDR",
+      core1Title: "Firme verificate prin ANAF",
+      core1Body: "Fiecare firmă e verificată la ANAF înainte să apară în catalog. Cauți după domeniu, județ sau nume.",
+      core1Link: "Deschide catalogul",
+      core2Title: "Proiecte și oportunități",
+      core2Body: "Firmele publică lucrări, achiziții și colaborări. Răspunzi direct, fără intermediari.",
+      core2Link: "Vezi proiectele",
+      core3Title: "Oameni pe care îi poți suna",
+      core3Body: "Membri verificați, cu profil complet și mesaje directe. Vorbești cu omul din spatele firmei, nu cu un formular.",
+      core3Link: "Vezi membrii",
+      extrasLabel: "În plus, pentru membri:",
+      extrasCircles: "Cercuri locale",
+      extrasCalendar: "Calendar fiscal",
+      ctaFinalPhotoAlt: "Antreprenor care lucrează la biroul lui, lângă Biblia deschisă",
       verse: "„Mai bine doi decât unul.”",
       verseRef: "Eclesiastul 4:9",
       verseBody:
-        "De aceea ACDR se organizează în cercuri locale: antreprenori care se întâlnesc regulat, își spun planurile și se țin de cuvânt.",
+        "De aceea ACDR pune oameni față în față: antreprenori care se cunosc, se recomandă unii pe alții și lucrează împreună.",
       versePhotoAlt: "Biblie pe o masă de lucru, lângă un carnet cu notițe și o cafea",
       valuesTitle: "Valorile ACDR",
       values: [
@@ -645,32 +643,31 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       heroTitleBefore: "No Christian entrepreneur has to walk",
       heroTitleAccent: "alone",
       heroSubtitle:
-        "A community of leaders who bring together faith, business and impact in society. Verified companies, local circles, people you can call.",
+        "A community of leaders who bring together faith, business and impact in society. Verified companies, real projects, people you can call.",
       heroJoin: "Join us",
       heroBrowse: "See companies",
-      heroPhotoAlt: "An entrepreneur praying at his desk, with an open Bible",
+      heroPhotoAlt: "An entrepreneur writing his plans at his desk, next to an open Bible",
       statsCompanies: "verified companies",
       statsDomains: "fields of activity",
       statsCounties: "counties covered",
-      concreteTitle: "What you actually do here",
-      concrete1Title: "Find verified companies",
-      concrete1Body: "Every company is checked with ANAF before it appears in the catalog.",
-      concrete1Link: "Open the catalog",
-      concrete2Title: "Join a circle",
-      concrete2Body: "A small group of entrepreneurs from your city who meet regularly.",
-      concrete2Link: "See circles",
-      concrete2Note: "3 to 12 people, with meetings, commitments and conversations of your own.",
-      concrete3Title: "Never miss a deadline",
-      concrete3Body: "The tax calendar shows only the filings that apply to your company.",
-      concrete3Link: "Open the tax calendar",
-      fiscalD112: "Social contributions and income tax",
-      fiscalD300: "VAT return, monthly",
-      photoCaption: "Faith doesn't stay at the office door.",
-      photoAlt: "An entrepreneur writing down his plans next to an open Bible",
+      coreTitle: "What you'll find in ACDR",
+      core1Title: "ANAF-verified companies",
+      core1Body: "Every company is checked with ANAF before it appears in the catalog. Search by field, county or name.",
+      core1Link: "Open the catalog",
+      core2Title: "Projects and opportunities",
+      core2Body: "Companies post jobs, purchases and collaborations. You reply directly, with no middlemen.",
+      core2Link: "See projects",
+      core3Title: "People you can call",
+      core3Body: "Verified members with full profiles and direct messages. You talk to the person behind the company, not a form.",
+      core3Link: "See members",
+      extrasLabel: "Also for members:",
+      extrasCircles: "Local circles",
+      extrasCalendar: "Tax calendar",
+      ctaFinalPhotoAlt: "An entrepreneur working at his desk next to an open Bible",
       verse: "“Two are better than one.”",
       verseRef: "Ecclesiastes 4:9",
       verseBody:
-        "That is why ACDR is organised in local circles: entrepreneurs who meet regularly, share their plans and keep their word.",
+        "That is why ACDR puts people face to face: entrepreneurs who know each other, recommend each other and work together.",
       versePhotoAlt: "A Bible on a work desk, next to a notebook and a coffee",
       valuesTitle: "ACDR values",
       values: [
