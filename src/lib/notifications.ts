@@ -58,17 +58,17 @@ function sablonEmail(titluBrut: string, mesajBrut: string | undefined, link: str
   const linkComplet = escapeHtml(link ? `${urlSite()}${link}` : urlSite());
   return `<!doctype html>
 <html lang="ro">
-  <body style="margin:0;padding:24px;background:#f6f6f4;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">
-    <table role="presentation" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e5e0;border-radius:16px;overflow:hidden;">
-      <tr><td style="height:4px;background:linear-gradient(90deg,#f0722a,#d85f1b);"></td></tr>
+  <body style="margin:0;padding:24px;background:#F1F2EE;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">
+    <table role="presentation" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #DADDD6;border-radius:20px;overflow:hidden;">
+      <tr><td style="height:4px;background:#C8963E;"></td></tr>
       <tr><td style="padding:28px;">
-        <p style="margin:0 0 4px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#f0722a;font-weight:600;">ACDR</p>
-        <h1 style="margin:0 0 12px;font-size:20px;color:#101828;">${titlu}</h1>
-        ${mesaj ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#475467;">${mesaj}</p>` : ""}
-        <a href="${linkComplet}" style="display:inline-block;background:#0a2540;color:#ffffff;text-decoration:none;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;">Vezi în platformă</a>
+        <p style="margin:0 0 4px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#1F3A2E;font-weight:800;">ACDR</p>
+        <h1 style="margin:0 0 12px;font-size:20px;color:#121614;">${titlu}</h1>
+        ${mesaj ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#5A635E;">${mesaj}</p>` : ""}
+        <a href="${linkComplet}" style="display:inline-block;background:#1F3A2E;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:14px;font-size:14px;font-weight:600;">Vezi în platformă</a>
       </td></tr>
-      <tr><td style="padding:16px 28px;background:#faf9f7;border-top:1px solid #e6e5e0;">
-        <p style="margin:0;font-size:12px;color:#98a2b3;">
+      <tr><td style="padding:16px 28px;background:#F1F2EE;border-top:1px solid #DADDD6;">
+        <p style="margin:0;font-size:12px;color:#5A635E;">
           Primești acest email pentru că ai un cont pe ACDR.
         </p>
       </td></tr>

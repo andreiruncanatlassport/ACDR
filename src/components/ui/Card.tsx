@@ -48,10 +48,10 @@ type BadgeTone = "neutral" | "success" | "warning" | "danger" | "violet" | "seal
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "bg-ink/8 text-ink-soft ring-1 ring-inset ring-ink/10",
   success: "bg-teal/12 text-teal ring-1 ring-inset ring-teal/25",
-  warning: "bg-seal/15 text-seal ring-1 ring-inset ring-seal/30",
+  warning: "bg-gold-pale text-gold-ink ring-1 ring-inset ring-gold/40",
   danger: "bg-rust/12 text-rust ring-1 ring-inset ring-rust/25",
   violet: "bg-violet/12 text-violet ring-1 ring-inset ring-violet/25",
-  seal: "gradient-seal text-white shadow-sm",
+  seal: "gradient-seal text-primary-content shadow-sm",
 };
 
 export function Badge({

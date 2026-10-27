@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Building2, Users, MessageCircle, UserRound } from "lucide-react";
+import { Home, Building2, Briefcase, MessageCircle, UserRound } from "lucide-react";
 import { clsx } from "clsx";
 import { useSettings } from "@/lib/settings/context";
 import { useUnreadMessagesCount } from "@/lib/useUnreadMessagesCount";
@@ -21,7 +21,9 @@ export function MobileTabBar({ autentificat }: { autentificat: boolean }) {
   const taburi = [
     { href: "/", label: t.mobileNav.home, icon: Home, exact: true },
     { href: "/catalog", label: t.mobileNav.companies, icon: Building2 },
-    { href: "/membri", label: t.mobileNav.members, icon: Users },
+    // Proiecte (oportunitatile) aduc colaborari, de-aia stau in bara; Membri
+    // ramane accesibil din meniu si de pe pagina de start.
+    { href: "/oportunitati", label: t.mobileNav.projects, icon: Briefcase },
     {
       href: "/mesaje",
       label: unreadMesaje > 0 ? `${t.mobileNav.messages} (${unreadMesaje > 9 ? "9+" : unreadMesaje})` : t.mobileNav.messages,
@@ -52,13 +54,21 @@ export function MobileTabBar({ autentificat }: { autentificat: boolean }) {
             <Link
               key={tab.href + tab.label}
               href={tab.href}
+              aria-current={activ ? "page" : undefined}
               className={clsx(
-                "flex flex-1 flex-col items-center gap-0.5 py-2 pt-2.5 transition-colors active:scale-95",
-                activ ? "text-seal" : "text-ink-soft/70"
+                "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 py-1.5 transition-colors active:scale-95",
+                activ ? "text-seal" : "text-ink-soft"
               )}
             >
-              <tab.icon className="h-5 w-5" strokeWidth={activ ? 2.2 : 1.8} />
-              <span className={clsx("text-[10px] leading-tight", activ ? "font-bold" : "font-medium")}>
+              <span
+                className={clsx(
+                  "flex h-7 w-12 items-center justify-center rounded-full transition-colors",
+                  activ && "bg-olive-pale"
+                )}
+              >
+                <tab.icon className="h-5 w-5" strokeWidth={activ ? 2.2 : 1.8} />
+              </span>
+              <span className={clsx("text-[11px] leading-tight", activ ? "font-bold" : "font-semibold")}>
                 {tab.label}
               </span>
             </Link>

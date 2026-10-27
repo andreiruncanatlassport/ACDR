@@ -47,7 +47,7 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
         {/* Reducere pentru membri — cel mai puternic motiv de click, deci cel
             mai vizibil element de pe card. */}
         {company.discount_procent ? (
-          <span className="absolute right-4 top-4 z-10 inline-flex items-center gap-1 rounded-full gradient-seal px-2.5 py-1 text-xs font-bold text-white shadow-[var(--shadow-md)]">
+          <span className="absolute right-4 top-4 z-10 inline-flex items-center gap-1 rounded-full gradient-seal px-2.5 py-1 text-xs font-bold text-primary-content shadow-[var(--shadow-md)]">
             <Tag className="h-3 w-3" />-{company.discount_procent}%
           </span>
         ) : null}

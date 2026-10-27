@@ -3,6 +3,7 @@ interface Dictionary {
     home: string;
     companies: string;
     members: string;
+    projects: string;
     messages: string;
     account: string;
     login: string;
@@ -249,6 +250,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       home: "Acasă",
       companies: "Firme",
       members: "Membri",
+      projects: "Proiecte",
       messages: "Mesaje",
       account: "Cont",
       login: "Intră",
@@ -494,6 +496,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       home: "Home",
       companies: "Companies",
       members: "Members",
+      projects: "Projects",
       messages: "Messages",
       account: "Account",
       login: "Log in",

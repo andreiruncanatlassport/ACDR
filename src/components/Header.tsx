@@ -42,12 +42,12 @@ export function Header({ userEmail, rol }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/8 bg-navy/90 backdrop-blur-xl">
       {/* fir auriu de sigiliu, sus */}
-      <div className="h-0.5 w-full gradient-seal opacity-80" />
+      <div className="h-0.5 w-full gradient-gold opacity-80" />
 
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <Link href="/" className="group flex items-center gap-2.5" title="ACDR">
-          <BrandMark variant="white" className="h-8 w-8 shrink-0 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-          <span className="hidden font-display text-lg font-semibold tracking-tight text-white sm:inline">
+          <BrandMark variant="white" className="h-8 w-8 shrink-0" />
+          <span className="hidden font-display text-lg font-black tracking-tight text-white sm:inline">
             ACDR
           </span>
         </Link>
@@ -56,31 +56,31 @@ export function Header({ userEmail, rol }: HeaderProps) {
           <Link href="/catalog" className={linkClass("/catalog")}>
             {t.nav.catalog}
             {pathname === "/catalog" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-gold" />
             )}
           </Link>
           <Link href="/oportunitati" className={linkClass("/oportunitati")}>
             {t.nav.opportunities}
             {pathname === "/oportunitati" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-gold" />
             )}
           </Link>
           <Link href="/membri" className={linkClass("/membri")}>
             {t.nav.members}
             {pathname === "/membri" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-gold" />
             )}
           </Link>
           <Link href="/stiri" className={linkClass("/stiri")}>
             {t.nav.news}
             {pathname === "/stiri" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-gold" />
             )}
           </Link>
           <Link href="/evenimente" className={linkClass("/evenimente")}>
             {t.nav.events}
             {pathname === "/evenimente" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-gold" />
             )}
           </Link>
 
@@ -96,7 +96,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
               </Link>
               <Link href="/mesaje" className={linkClass("/mesaje")}>
                 {t.nav.messages}
-                {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
+                {unreadMesaje > 0 && <span className="ml-1 font-bold text-white">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
               </Link>
               <Link href="/dashboard" className={linkClass("/dashboard")}>
                 {t.nav.dashboard}
@@ -117,7 +117,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
                 {t.nav.login}
               </Link>
               <SettingsMenu />
-              <LinkButton href="/inregistrare" variant="seal" size="sm">
+              <LinkButton href="/inregistrare" variant="gold" size="sm">
                 {t.nav.register}
               </LinkButton>
             </>
@@ -170,7 +170,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
                 </Link>
                 <Link href="/mesaje" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.messages}
-                  {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
+                  {unreadMesaje > 0 && <span className="ml-1 font-bold text-white">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
                 </Link>
                 <Link href="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.dashboard}
@@ -184,7 +184,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
                 <Link href="/login" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.login}
                 </Link>
-                <LinkButton href="/inregistrare" variant="seal" size="sm" className="w-fit">
+                <LinkButton href="/inregistrare" variant="gold" size="sm" className="w-fit">
                   {t.nav.register}
                 </LinkButton>
               </>

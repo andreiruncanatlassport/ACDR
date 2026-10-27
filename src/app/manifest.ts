@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Comunitatea Antreprenorilor Creștini — firme verificate prin ANAF, membri, oportunități, mesaje și evenimente.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#0a2540",
+    background_color: "#F1F2EE",
+    theme_color: "#1F3A2E",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

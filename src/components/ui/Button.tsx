@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "seal" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "seal" | "gold" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 interface BaseProps {
@@ -16,9 +16,12 @@ const variantClasses: Record<Variant, string> = {
   primary:
     "bg-primary text-primary-content shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:brightness-110",
   seal:
-    "gradient-seal text-white shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:brightness-105",
+    "gradient-seal text-primary-content shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:brightness-110",
+  // Aur cu text inchis — doar pentru actiunea principala de pe benzile masline
+  // (ex: "Creeaza cont" in header). Aurul nu se foloseste niciodata ca text pe alb.
+  gold: "bg-gold text-[#121614] shadow-[var(--shadow-sm)] hover:brightness-105",
   secondary:
-    "bg-surface text-ink border border-line-strong shadow-[var(--shadow-sm)] hover:border-seal hover:shadow-[var(--shadow-md)]",
+    "bg-surface text-ink border-[1.5px] border-primary shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]",
   ghost: "bg-transparent text-ink-soft hover:bg-ink/6 hover:text-ink",
   danger: "bg-rust text-white shadow-[var(--shadow-sm)] hover:brightness-110",
 };

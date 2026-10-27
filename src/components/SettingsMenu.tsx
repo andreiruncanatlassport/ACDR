@@ -90,7 +90,7 @@ export function SettingsMenu() {
           <button
             onClick={() => setLocale("ro")}
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              ro ? "gradient-seal text-white shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
+              ro ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
             }`}
           >
             Română
@@ -98,7 +98,7 @@ export function SettingsMenu() {
           <button
             onClick={() => setLocale("en")}
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              !ro ? "gradient-seal text-white shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
+              !ro ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
             }`}
           >
             English
@@ -115,7 +115,7 @@ export function SettingsMenu() {
           <button
             onClick={() => setTheme("light")}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              theme === "light" ? "gradient-seal text-white shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
+              theme === "light" ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
             }`}
           >
             <Sun className="h-3.5 w-3.5" /> {ro ? "Luminos" : "Light"}
@@ -123,7 +123,7 @@ export function SettingsMenu() {
           <button
             onClick={() => setTheme("dark")}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              theme === "dark" ? "gradient-seal text-white shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
+              theme === "dark" ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
             }`}
           >
             <Moon className="h-3.5 w-3.5" /> {ro ? "Întunecat" : "Dark"}
@@ -161,7 +161,7 @@ export function SettingsMenu() {
               key={m.id}
               onClick={() => setFontSize(m.id)}
               className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium transition ${
-                fontSize === m.id ? "gradient-seal text-white shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
+                fontSize === m.id ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]" : "text-ink-soft hover:text-ink"
               }`}
             >
               {ro ? m.label_ro : m.label_en}

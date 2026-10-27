@@ -95,7 +95,7 @@ export default async function AdminMembriPage({
               href={`/admin/membri?stare=${f.id}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
               className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
                 stareFiltru === f.id
-                  ? "gradient-seal text-white shadow-[var(--shadow-sm)]"
+                  ? "gradient-seal text-primary-content shadow-[var(--shadow-sm)]"
                   : "bg-ink/5 text-ink-soft hover:bg-ink/10 hover:text-ink"
               }`}
             >

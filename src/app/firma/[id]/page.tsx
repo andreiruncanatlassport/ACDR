@@ -262,7 +262,7 @@ export default async function CompanyPage({
         <div className="mt-6 overflow-hidden rounded-2xl gradient-seal p-[1.5px] shadow-[var(--shadow-md)]">
           <div className="rounded-[calc(1.25rem-1px)] bg-surface p-5">
             <div className="flex flex-wrap items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl gradient-seal text-white shadow-[var(--shadow-sm)]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl gradient-seal text-primary-content shadow-[var(--shadow-sm)]">
                 <span className="font-mono-num text-lg font-bold">-{company.discount_procent}%</span>
               </div>
               <div className="min-w-0 flex-1">

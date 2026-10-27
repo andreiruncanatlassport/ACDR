@@ -190,7 +190,7 @@ export function MessageThread({ conversationId, myProfileId }: { conversationId:
                 <div
                   className={clsx(
                     "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed shadow-[var(--shadow-sm)]",
-                    eSauMeu ? "gradient-seal rounded-br-md text-white" : "bg-surface text-ink border border-line rounded-bl-md"
+                    eSauMeu ? "gradient-seal rounded-br-md text-primary-content" : "bg-surface text-ink border border-line rounded-bl-md"
                   )}
                 >
                   {m.continut}
@@ -220,7 +220,7 @@ export function MessageThread({ conversationId, myProfileId }: { conversationId:
         <button
           onClick={trimite}
           disabled={!text.trim() || trimit}
-          className="press-on-click flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl gradient-seal text-white shadow-[var(--shadow-md)] transition hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-45"
+          className="press-on-click flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl gradient-seal text-primary-content shadow-[var(--shadow-md)] transition hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-45"
           aria-label={t.messages.send}
         >
           {trimit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

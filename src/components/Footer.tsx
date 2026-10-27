@@ -26,7 +26,7 @@ export function Footer() {
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
               <BrandMark variant="white" className="h-9 w-9 shrink-0" />
-              <span className="font-display text-base font-semibold leading-tight tracking-tight text-white">
+              <span className="font-display text-base font-black leading-tight tracking-tight text-white">
                 ACDR
               </span>
             </div>
@@ -38,7 +38,7 @@ export function Footer() {
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm text-white/60 transition-all duration-200 hover:translate-x-0.5 hover:text-seal-light"
+                className="text-sm text-white/60 transition-all duration-200 hover:translate-x-0.5 hover:text-white"
               >
                 {l.label}
               </Link>

@@ -110,7 +110,7 @@ export function InstallAppBanner() {
           <button
             type="button"
             onClick={instaleaza}
-            className="shrink-0 rounded-full gradient-seal px-3.5 py-1.5 text-xs font-semibold text-white shadow-[var(--shadow-sm)]"
+            className="shrink-0 rounded-full gradient-seal px-3.5 py-1.5 text-xs font-semibold text-primary-content shadow-[var(--shadow-sm)]"
           >
             Instalează
           </button>

@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Work_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Schibsted_Grotesk, Onest, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin", "latin-ext"], variable: "--font-space-grotesk", weight: ["500", "600", "700"] });
-const workSans = Work_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-work-sans", weight: ["400", "500", "600", "700"] });
+// Identitatea din octombrie 2026: Schibsted Grotesk la titluri, Onest la text.
+// Ambele sunt fonturi variabile, cu diacriticele romanesti (s, t cu virgula) in latin-ext.
+const schibsted = Schibsted_Grotesk({ subsets: ["latin", "latin-ext"], variable: "--font-schibsted" });
+const onest = Onest({ subsets: ["latin", "latin-ext"], variable: "--font-onest" });
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], variable: "--font-plex-mono", weight: ["500", "600"] });
 import { SettingsProvider, settingsInitScript } from "@/lib/settings/context";
 import { Header } from "@/components/Header";
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a2540",
+  themeColor: "#1F3A2E",
 };
 
 export default async function RootLayout({
@@ -52,11 +54,11 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="ro" className={`h-full antialiased ${spaceGrotesk.variable} ${workSans.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="ro" className={`h-full antialiased ${schibsted.variable} ${onest.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: settingsInitScript }} />
       </head>
-      <body className="flex min-h-full flex-col bg-paper text-ink pb-14 md:pb-0">
+      <body className="flex min-h-full flex-col bg-paper text-ink pb-16 md:pb-0">
         <SettingsProvider>
           <Header userEmail={user?.email ?? null} rol={rol} />
           <InstallAppBanner />

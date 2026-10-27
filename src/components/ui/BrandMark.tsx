@@ -3,47 +3,41 @@ import { clsx } from "clsx";
 interface BrandMarkProps {
   className?: string;
   /**
-   * "auto"  — implicit: sigla color pe temă deschisă, albă pe temă întunecată.
-   * "white" — forțat alb (benzi navy: header, footer, secțiuni dark).
-   * "color" — forțat color (rar; doar pe fundaluri garantat deschise).
+   * "auto"  — implicit: blocuri măslin pe tema deschisă, albe pe tema întunecată.
+   * "white" — forțat alb (benzi măslin: header, footer, secțiuni închise).
+   * "color" — forțat măslin (doar pe fundaluri garantat deschise).
    */
   variant?: "auto" | "color" | "white";
 }
 
 /**
- * Semnul de brand al ACDR — sigla oficială.
+ * Semnul ACDR: patru blocuri cu colțuri rotunjite, așezate 2×2. Crucea nu e
+ * desenată — apare din spațiul gol dintre blocuri. Blocul din dreapta-sus e
+ * întotdeauna auriu (talantul pus la lucru), indiferent de variantă.
  *
- * Pe varianta "auto" randăm ambele imagini și comutăm prin CSS (dark:), nu
- * prin JavaScript: astfel sigla e corectă din primul cadru, fără pâlpâire la
- * încărcare și fără nepotrivire între ce randează serverul și clientul.
+ * SVG inline, nu imagine: e clar la orice mărime și comută culoarea prin CSS
+ * (dark:), deci e corect din primul cadru, fără pâlpâire.
  */
 export function BrandMark({ className, variant = "auto" }: BrandMarkProps) {
-  if (variant === "auto") {
-    return (
-      <span className={clsx("relative inline-block shrink-0", className)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo-mark.png"
-          alt="ACDR"
-          className="h-full w-full object-contain dark:hidden"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo-mark-white.png"
-          alt=""
-          aria-hidden
-          className="hidden h-full w-full object-contain dark:block"
-        />
-      </span>
-    );
-  }
+  const blocuri =
+    variant === "white"
+      ? "fill-white"
+      : variant === "color"
+        ? "fill-[#1F3A2E]"
+        : "fill-[#1F3A2E] dark:fill-white";
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={variant === "white" ? "/logo-mark-white.png" : "/logo-mark.png"}
-      alt="ACDR"
-      className={clsx("object-contain", className)}
-    />
+    <svg
+      viewBox="0 0 52 62"
+      role="img"
+      aria-label="ACDR"
+      className={clsx("shrink-0", className)}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0" y="0" width="23" height="18" rx="5" className={blocuri} />
+      <rect x="29" y="0" width="23" height="18" rx="5" fill="#C8963E" />
+      <rect x="0" y="24" width="23" height="38" rx="5" className={blocuri} />
+      <rect x="29" y="24" width="23" height="38" rx="5" className={blocuri} />
+    </svg>
   );
 }

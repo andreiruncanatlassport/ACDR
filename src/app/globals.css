@@ -3,12 +3,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ==========================================================================
-   REȚEAUA ANTREPRENORILOR CREȘTINI — sistem de design
-   Concept: "registrul breslei, reimaginat" — autoritate oficiala (navy adanc,
-   sigiliu auriu) intalneste indrazneala moderna (mesh gradients, adancime in
-   straturi, accente vii). Blocurile sunt clar delimitate prin ELEVATIE +
-   TEXTURA, nu doar prin linii subtiri: fiecare tip de continut are un
-   tratament vizual propriu, ca sa se distinga dintr-o privire.
+   ACDR — sistem de design (identitatea din octombrie 2026)
+   Masline + aur folosit rar, pe fundal "piatra". Fara gradienturi decorative:
+   blocurile se disting prin suprafete albe pe fundal cald si contururi fine.
+   Titluri: Schibsted Grotesk. Text: Onest. Vezi 06-identitate-vizuala.md.
+
+   Numele tokenilor (navy, seal, ember...) sunt pastrate din versiunea veche,
+   ca sa nu schimbam sute de clase in componente; valorile sunt cele noi:
+     navy  = banda masline (header, footer)
+     seal  = accent de text (masline pe deschis, auriu deschis pe intunecat)
+     gold  = aurul brandului, doar ca fundal sub text inchis
    ========================================================================== */
 
 @theme inline {
@@ -30,6 +34,10 @@
   --color-line-strong: var(--line-strong);
   --color-primary: var(--primary);
   --color-primary-content: var(--primary-content);
+  --color-gold: var(--gold);
+  --color-gold-pale: var(--gold-pale);
+  --color-gold-ink: var(--gold-ink);
+  --color-olive-pale: var(--olive-pale);
 
   --font-display: var(--font-family-display);
   --font-sans: var(--font-family-sans);
@@ -42,80 +50,83 @@
 
 :root {
   /* ---- LIGHT ---- */
-  --ink: #0f2438;
-  --ink-soft: #4a5c6d;
-  --paper: #f4f6f8;
+  --ink: #121614;          /* cerneala */
+  --ink-soft: #5a635e;     /* salvie */
+  --paper: #f1f2ee;        /* piatra — fundalul aplicatiei */
   --paper-white: #ffffff;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --navy: #0a2540;
-  --seal: #f0722a;
-  --seal-light: #ff9552;
-  --ember: #d85f1b;
-  --teal: #269fa6;
-  --teal-light: #4dbdc4;
-  --violet: #6a4bc4;
+  --navy: #1f3a2e;         /* masline — benzile de header/footer */
+  --seal: #1f3a2e;         /* accent de text pe deschis */
+  --seal-light: #2c5241;
+  --ember: #6e4e14;        /* aur inchis, lizibil ca text */
+  --teal: #2f6b4f;         /* succes */
+  --teal-light: #4e8f6e;
+  --violet: #4b5d7a;
   --rust: #b4331f;
-  --line: #e2e7ec;
-  --line-strong: #ccd3da;
-  --primary: #0a2540;
+  --line: #daddd6;
+  --line-strong: #c5cac2;
+  --primary: #1f3a2e;
   --primary-content: #ffffff;
+  --gold: #c8963e;
+  --gold-pale: #f6eedd;
+  --gold-ink: #6e4e14;
+  --olive-pale: #e3eae5;
 
-  --font-family-display: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-sans: var(--font-work-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: var(--font-schibsted), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-sans: var(--font-onest), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-family-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --base-font-scale: 1;
 
   /* Elevatie in straturi — cheia pentru blocuri clar distinse */
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow-md: 0 2px 4px -1px rgba(16, 24, 40, 0.06), 0 4px 12px -2px rgba(16, 24, 40, 0.08);
-  --shadow-lg: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 12px 28px -4px rgba(16, 24, 40, 0.12);
-  --shadow-xl: 0 8px 16px -4px rgba(16, 24, 40, 0.1), 0 24px 48px -8px rgba(16, 24, 40, 0.16);
+  /* Umbre slabe: cardurile se disting prin alb pe piatra, nu prin umbra */
+  --shadow-sm: 0 1px 2px rgba(18, 22, 20, 0.04);
+  --shadow-md: 0 1px 2px rgba(18, 22, 20, 0.04), 0 2px 8px -2px rgba(18, 22, 20, 0.06);
+  --shadow-lg: 0 2px 4px -1px rgba(18, 22, 20, 0.06), 0 8px 20px -4px rgba(18, 22, 20, 0.08);
+  --shadow-xl: 0 4px 8px -2px rgba(18, 22, 20, 0.08), 0 16px 32px -8px rgba(18, 22, 20, 0.12);
 }
 
 .dark {
   /* ---- DARK ----
-     Neutre calde (nu albastru rece), ca sa se acorde cu portocaliul siglei.
-     Ierarhie clara pe 4 niveluri de suprafata: pagina < card < card ridicat <
-     banda navy. Textul e deschis pe fundal intunecat, cu doua trepte de
-     contrast (ink pentru continut, ink-soft pentru secundar) — ambele
-     verificate sa depaseasca pragul AA. */
-  --ink: #f1f3f7;
-  --ink-soft: #a6b0bf;
-  --paper: #0b0e14;
-  --paper-white: #141922;
-  --surface: #141922;
-  --surface-raised: #1c222e;
-  --navy: #070a0f;
+     Masline adanc. Textul e deschis, cu doua trepte de contrast (ink pentru
+     continut, ink-soft pentru secundar), ambele peste pragul AA. Butoanele
+     principale devin aurii, cu text inchis. */
+  --ink: #eef1ec;
+  --ink-soft: #a9b6ad;
+  --paper: #0e1a14;
+  --paper-white: #13241c;
+  --surface: #13241c;
+  --surface-raised: #1a2e24;
+  --navy: #0a140f;
 
-  /* Accentele sunt luminate si usor desaturate: pe fundal intunecat, culorile
-     saturate "vibreaza" si obosesc ochiul. */
-  --seal: #ff9d5c;
-  --seal-light: #ffbc8a;
-  --ember: #ff8552;
-  --teal: #4cc9d0;
-  --teal-light: #74dbe1;
-  --violet: #a48bf5;
+  --seal: #d9b26a;
+  --seal-light: #e6c88f;
+  --ember: #e0b872;
+  --teal: #6fbf95;
+  --teal-light: #8fd1ad;
+  --violet: #a9b8d6;
   --rust: #ff8574;
 
-  --line: #262d3a;
-  --line-strong: #3a4353;
-  --primary: #ff9d5c;
-  --primary-content: #0b0e14;
+  --line: #2a3b32;
+  --line-strong: #3b5045;
+  --primary: #c8963e;
+  --primary-content: #121614;
+  --gold: #c8963e;
+  --gold-pale: #2e2716;
+  --gold-ink: #e6c88f;
+  --olive-pale: #1f3a2e;
 
-  /* Pe intuneric umbrele nu se vad; ierarhia vine din suprafete mai deschise
-     + un contur subtil de lumina in partea de sus a blocurilor ridicate. */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.6), 0 4px 14px -2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 6px 12px -2px rgba(0, 0, 0, 0.6), 0 16px 32px -6px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 10px 20px -4px rgba(0, 0, 0, 0.65), 0 28px 56px -10px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.45), 0 4px 14px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 6px 12px -2px rgba(0, 0, 0, 0.5), 0 16px 32px -6px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 10px 20px -4px rgba(0, 0, 0, 0.55), 0 28px 56px -10px rgba(0, 0, 0, 0.55);
 }
 
 /* ---- Variante de font (panoul de Setari) ---- */
 .font-sistem {
-  --font-family-sans: var(--font-work-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-display: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-sans: var(--font-onest), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: var(--font-schibsted), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 .font-clasic {
   --font-family-sans: Georgia, "Times New Roman", serif;
@@ -149,11 +160,11 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.022em;
-  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
-h1 { letter-spacing: -0.032em; }
+h1 { letter-spacing: -0.025em; font-weight: 800; }
 
 .font-mono-num {
   font-family: var(--font-mono);
@@ -180,45 +191,14 @@ h1 { letter-spacing: -0.032em; }
    FUNDALURI CU CARACTER
    ========================================================================== */
 
-/* Mesh gradient — fundal principal de hero, viu dar nu strident */
+/* Fundalurile de hero/CTA erau degradeuri colorate; identitatea noua nu
+   foloseste gradienturi decorative, asa ca acum sunt suprafete plate. Clasele
+   raman, ca sa nu schimbam paginile care le folosesc. */
 .mesh-hero {
   background-color: var(--paper);
-  background-image:
-    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 22%, transparent) 0px, transparent 55%),
-    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 14%, transparent) 0px, transparent 45%),
-    radial-gradient(at 25% 92%, color-mix(in srgb, var(--color-ember) 12%, transparent) 0px, transparent 50%);
 }
-/* Pe intuneric, spalarile de culoare intense arata ca o eroare de culoare.
-   Le reducem la niste halouri discrete, care doar sugereaza adancime. */
-.dark .mesh-hero {
-  background-color: var(--paper);
-  background-image:
-    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 10%, transparent) 0px, transparent 45%),
-    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 9%, transparent) 0px, transparent 42%),
-    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 7%, transparent) 0px, transparent 40%);
-}
-
-/* Fundalul de hero/CTA — degrade cald pe tema deschisa, intunecat pe cea
-   intunecata. Anterior era hardcodat cu alb+crem, deci ramanea luminos si pe
-   tema dark: de aici senzatia ca "se coloreaza elementele gresit".
-   Folosim culori explicite (nu color-mix), ca sa nu existe fallback stralucitor
-   pe browserele mai vechi. */
 .hero-wash {
-  background-image: linear-gradient(
-    to bottom right,
-    #ffffff 0%,
-    #fdf1e8 45%,
-    #e9f6f6 100%
-  );
-}
-.dark .hero-wash {
-  background-image: linear-gradient(
-    to bottom right,
-    #0b0e14 0%,
-    #16120f 45%,
-    #0d1719 100%
-  );
+  background-color: var(--paper-white);
 }
 
 /* Grila fina de "registru" — evoca hartia de caiet oficial */
@@ -303,22 +283,27 @@ h1 { letter-spacing: -0.032em; }
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(to bottom, var(--color-seal), var(--color-ember));
+  background: var(--color-gold);
 }
 
 /* ==========================================================================
    ACCENTE & EFECTE
    ========================================================================== */
 
+/* Fostul degrade "sigiliu": acum culoarea principala plina (masline pe
+   deschis, aur pe intunecat). Textul de deasupra trebuie sa fie
+   primary-content, nu alb fortat — vezi Button. */
 .gradient-seal {
-  background: linear-gradient(135deg, var(--color-seal) 0%, var(--color-seal-light) 40%, var(--color-ember) 100%);
+  background: var(--color-primary);
+}
+
+/* Linia subtire aurie (sub linkul activ din header, pe benzi) */
+.gradient-gold {
+  background: var(--color-gold);
 }
 
 .text-gradient-seal {
-  background: linear-gradient(120deg, var(--color-seal) 0%, var(--color-ember) 60%, var(--color-violet) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-seal);
 }
 
 .glow-seal {
@@ -351,9 +336,9 @@ h1 { letter-spacing: -0.032em; }
 
 /* Eticheta tip "stampila de dosar" */
 .stamp-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -408,7 +393,7 @@ h1 { letter-spacing: -0.032em; }
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 700;
-  color: #0a2540;
+  color: #1f3a2e;
   letter-spacing: -0.01em;
 }
 

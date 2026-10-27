@@ -230,21 +230,9 @@ export default async function HomePage() {
           </div>
 
           <div className="relative hidden justify-center md:flex md:justify-end">
-            <div
-              aria-hidden
-              className="absolute h-72 w-72 rounded-full opacity-20 blur-3xl gradient-seal sm:h-96 sm:w-96"
-            />
-            <div
-              aria-hidden
-              className="absolute h-64 w-64 rounded-full sm:h-80 sm:w-80"
-              style={{
-                background: "conic-gradient(from 0deg, var(--color-seal), var(--color-teal), var(--color-seal))",
-                animation: "spin 40s linear infinite",
-              }}
-            />
-            <div className="glow-seal relative flex h-56 w-56 items-center justify-center rounded-full bg-surface sm:h-72 sm:w-72">
+            <div className="relative flex h-56 w-56 items-center justify-center rounded-[48px] border border-line bg-surface shadow-[var(--shadow-lg)] sm:h-72 sm:w-72">
               <BrandMark className="h-16 w-16 sm:h-20 sm:w-20" />
-              <span className="absolute -bottom-3.5 rounded-full gradient-seal px-4 py-1.5 text-xs font-semibold text-white shadow-[var(--shadow-lg)]">
+              <span className="absolute -bottom-3.5 rounded-full gradient-seal px-4 py-1.5 text-xs font-semibold text-primary-content shadow-[var(--shadow-lg)]">
                 {t.home.stampLabel}
               </span>
             </div>
@@ -422,10 +410,10 @@ export default async function HomePage() {
               <div className="flex items-center justify-between">
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-[var(--shadow-md)] ${
-                    i === 0 ? "gradient-seal" : i === 1 ? "bg-gradient-to-br from-teal to-teal-light" : "bg-gradient-to-br from-violet to-seal"
+                    i === 0 ? "gradient-seal text-primary-content" : i === 1 ? "bg-teal text-white" : "bg-gold text-[#121614]"
                   }`}
                 >
-                  <step.icon className="h-5 w-5 text-white" strokeWidth={1.8} />
+                  <step.icon className="h-5 w-5" strokeWidth={1.8} />
                 </div>
                 <span className="font-mono-num text-2xl font-bold text-ink/8">{step.n}</span>
               </div>
@@ -438,19 +426,11 @@ export default async function HomePage() {
 
       {/* ================= INCREDERE ================= */}
       <section className="relative overflow-hidden border-y border-line bg-navy">
-        <BrandMark variant="white" className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 opacity-[0.06] rotate-6" />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full opacity-15 blur-3xl gradient-seal"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-violet opacity-15 blur-3xl"
-        />
+        <BrandMark variant="white" className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 opacity-[0.06]" />
 
         <div className="relative mx-auto max-w-6xl px-5 py-14 md:py-20">
           <div className="max-w-xl">
-            <p className="stamp-label text-seal-light">{t.home.trustEyebrow}</p>
+            <p className="stamp-label text-white/75">{t.home.trustEyebrow}</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {t.home.trustTitle}
             </h2>
@@ -460,10 +440,10 @@ export default async function HomePage() {
             {increderi.map((item, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-white/10 bg-white/4 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-seal/40 hover:bg-white/6"
+                className="rounded-2xl border border-white/10 bg-white/4 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-gold/50 hover:bg-white/6"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-seal shadow-[var(--shadow-md)]">
-                  <item.icon className="h-5 w-5 text-white" strokeWidth={1.8} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold shadow-[var(--shadow-md)]">
+                  <item.icon className="h-5 w-5 text-[#121614]" strokeWidth={1.8} />
                 </div>
                 <p className="mt-4 text-sm leading-relaxed text-white/70">{item.text}</p>
               </div>
@@ -476,7 +456,7 @@ export default async function HomePage() {
       {!user && (
         <section className="hero-wash relative overflow-hidden">
           <div className="relative mx-auto max-w-3xl px-5 py-14 text-center md:py-20">
-            <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
+            <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(31,58,46,0.15)]" />
             <h2 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
               {t.home.ctaFinalTitle}
             </h2>
