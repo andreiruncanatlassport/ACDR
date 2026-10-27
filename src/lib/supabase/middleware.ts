@@ -6,7 +6,11 @@ import { NextResponse, type NextRequest } from "next/server";
 // nimic: pagina de mentenanta insasi, autentificarea, si fisierele statice
 // (astea din urma sunt oricum excluse si de matcher-ul din middleware.ts,
 // dar le mai verificam si aici, ca o a doua plasa de siguranta).
-const CAI_EXCLUSE = ["/mentenanta", "/login", "/api", "/_next", "/favicon.ico", "/manifest.webmanifest"];
+const CAI_EXCLUSE = [
+  "/mentenanta", "/login", "/api", "/_next", "/favicon.ico", "/manifest.webmanifest",
+  // Paginile legale raman accesibile oricand (Legea 365/2002, GDPR)
+  "/termeni", "/confidentialitate", "/cookies", "/regulament",
+];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

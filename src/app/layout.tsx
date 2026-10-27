@@ -19,6 +19,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { InstallAppBanner } from "@/components/InstallAppBanner";
+import { CookieNotice } from "@/components/CookieNotice";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
@@ -72,6 +73,7 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <MobileTabBar autentificat={Boolean(user)} />
+          <CookieNotice />
         </SettingsProvider>
       </body>
     </html>

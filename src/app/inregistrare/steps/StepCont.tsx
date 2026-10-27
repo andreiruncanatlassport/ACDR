@@ -31,11 +31,11 @@ export function StepCont({ onDone }: Props) {
     setEroare(null);
 
     if (!acceptaTermeni) {
-      setEroare("Trebuie să accepți Termenii, Regulamentul și Politica de confidențialitate.");
+      setEroare("Trebuie să confirmi că ai cel puțin 18 ani și să accepți Termenii și Regulamentul.");
       return;
     }
     if (!declaraValori) {
-      setEroare("Trebuie să confirmi declarația de mai jos pentru a continua.");
+      setEroare("Pentru a fi membru ACDR e nevoie de declarația și consimțământul de mai jos.");
       return;
     }
     if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
@@ -153,15 +153,21 @@ export function StepCont({ onDone }: Props) {
         <FieldHint>Minim 8 caractere.</FieldHint>
       </div>
 
-      <label className="flex items-start gap-2.5 rounded-xl border border-seal/20 bg-seal/5 p-3.5 text-sm text-ink">
+      <label className="flex items-start gap-2.5 text-sm text-ink-soft">
         <input
           type="checkbox"
           checked={declaraValori}
           onChange={(e) => setDeclaraValori(e.target.checked)}
-          className="mt-0.5 rounded border-line accent-seal"
+          className="mt-0.5 h-5 w-5 shrink-0 rounded border-line accent-seal"
         />
         <span>
-          Declar că sunt antreprenor/oare și că îmi desfășor activitatea potrivit valorilor creștine.
+          Declar că sunt antreprenor/oare și că îmi desfășor activitatea potrivit valorilor creștine. Îmi dau{" "}
+          <strong className="text-ink">consimțământul explicit</strong> ca ACDR să prelucreze această informație despre
+          convingerile mele religioase și să afișeze profilul meu în directorul de membri, conform{" "}
+          <Link href="/confidentialitate#date-sensibile" target="_blank" className="font-medium text-seal hover:underline">
+            Politicii de confidențialitate
+          </Link>
+          . Pot retrage acordul oricând.
         </span>
       </label>
 
@@ -170,20 +176,24 @@ export function StepCont({ onDone }: Props) {
           type="checkbox"
           checked={acceptaTermeni}
           onChange={(e) => setAcceptaTermeni(e.target.checked)}
-          className="mt-0.5 rounded border-line accent-seal"
+          className="mt-0.5 h-5 w-5 shrink-0 rounded border-line accent-seal"
         />
         <span>
-          Am citit și sunt de acord cu{" "}
+          Am cel puțin 18 ani, am citit și sunt de acord cu{" "}
           <Link href="/termeni" target="_blank" className="font-medium text-seal hover:underline">
-            Termenii și Condițiile
-          </Link>
-          ,{" "}
-          <Link href="/regulament" target="_blank" className="font-medium text-seal hover:underline">
-            Regulamentul comunității
+            Termenii și condițiile
           </Link>{" "}
           și{" "}
+          <Link href="/regulament" target="_blank" className="font-medium text-seal hover:underline">
+            Regulamentul comunității
+          </Link>
+          . Am citit{" "}
           <Link href="/confidentialitate" target="_blank" className="font-medium text-seal hover:underline">
-            Politica de confidențialitate (GDPR)
+            Politica de confidențialitate
+          </Link>{" "}
+          și{" "}
+          <Link href="/cookies" target="_blank" className="font-medium text-seal hover:underline">
+            Politica de cookie-uri
           </Link>
           .
         </span>
