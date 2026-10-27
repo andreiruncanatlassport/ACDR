@@ -10,6 +10,7 @@ import { CompanyCard } from "@/components/CompanyCard";
 import { OpportunityCard, type OpportunityCardData } from "@/components/OpportunityCard";
 import { MobileSlideCarousel } from "@/components/MobileSlideCarousel";
 import { alegeFirmeRotativ } from "@/lib/rotate";
+import { inceputulZileiDeAzi } from "@/lib/evenimente-data";
 
 // Cate firme aratam in preview-ul de pe homepage — tinut mic intentionat
 // (2-3), ca homepage-ul sa ramana un ecran de intrare compact, nu un al
@@ -70,9 +71,9 @@ export default async function HomePage() {
       .limit(3),
     supabase
       .from("events")
-      .select("slug, titlu, imagine_url, tip, locatie, online, data_inceput, status")
+      .select("slug, titlu, imagine_url, tip, locatie, online, data_inceput, are_ora_inceput, status")
       .eq("status", "publicat")
-      .gte("data_inceput", new Date().toISOString())
+      .gte("data_inceput", inceputulZileiDeAzi())
       .order("data_inceput", { ascending: true })
       .limit(3),
     // Pentru preview-ul rotativ de pe homepage: luam un lot recent de firme

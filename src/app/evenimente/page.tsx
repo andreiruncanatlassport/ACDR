@@ -1,4 +1,5 @@
 import { CalendarDays, PenLine } from "lucide-react";
+import { inceputulZileiDeAzi } from "@/lib/evenimente-data";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { EventCard, type EventCardData } from "@/components/EventCard";
@@ -10,9 +11,9 @@ interface EventRow extends EventCardData {
   id: string;
 }
 
-/** Extras intr-o functie ca sa nu apelam Date.now() direct in randare. */
+/** Evenimentele de azi raman la „viitoare” toata ziua (inclusiv cele fara ora). */
 function acumIso(): number {
-  return Date.now();
+  return new Date(inceputulZileiDeAzi()).getTime();
 }
 
 export default async function EvenimentePage() {
@@ -32,7 +33,7 @@ export default async function EvenimentePage() {
 
   const { data } = await supabase
     .from("events")
-    .select("id, slug, titlu, imagine_url, tip, locatie, online, data_inceput, status, capacitate")
+    .select("id, slug, titlu, imagine_url, tip, locatie, online, data_inceput, are_ora_inceput, status, capacitate")
     .in("status", ["publicat", "anulat"])
     .order("data_inceput", { ascending: true })
     .limit(100);

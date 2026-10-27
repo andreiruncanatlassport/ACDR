@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
 import { Input, Label, Textarea, Select, FieldError, FieldHint, FieldGroup } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { DataOraInput } from "@/components/DataOraInput";
+import { isoDinRomania } from "@/lib/evenimente-data";
 
 const TIPURI = [
   { id: "conferinta", label: "Conferință" },
@@ -22,7 +24,9 @@ export function ProposeEventForm() {
   const [locatie, setLocatie] = useState("");
   const [linkExtern, setLinkExtern] = useState("");
   const [dataInceput, setDataInceput] = useState("");
+  const [oraInceput, setOraInceput] = useState("");
   const [dataSfarsit, setDataSfarsit] = useState("");
+  const [oraSfarsit, setOraSfarsit] = useState("");
   const [capacitate, setCapacitate] = useState("");
   const [seTrimite, setSeTrimite] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
@@ -31,6 +35,16 @@ export function ProposeEventForm() {
   async function trimite() {
     if (!titlu.trim() || !descriere.trim() || !dataInceput) {
       setEroare("Titlul, descrierea și data de început sunt obligatorii.");
+      return;
+    }
+    const inceputIso = isoDinRomania(dataInceput, oraInceput || null);
+    const sfarsitIso = dataSfarsit ? isoDinRomania(dataSfarsit, oraSfarsit || null) : null;
+    if (!inceputIso || (dataSfarsit && !sfarsitIso)) {
+      setEroare("Data nu e validă. Verifică ziua, luna și anul.");
+      return;
+    }
+    if (sfarsitIso && sfarsitIso < inceputIso) {
+      setEroare("Data de sfârșit e înaintea datei de început.");
       return;
     }
     setSeTrimite(true);
@@ -46,8 +60,10 @@ export function ProposeEventForm() {
           online,
           locatie: locatie || null,
           link_extern: linkExtern || null,
-          data_inceput: new Date(dataInceput).toISOString(),
-          data_sfarsit: dataSfarsit ? new Date(dataSfarsit).toISOString() : null,
+          data_inceput: inceputIso,
+          are_ora_inceput: Boolean(oraInceput),
+          data_sfarsit: sfarsitIso,
+          are_ora_sfarsit: Boolean(oraSfarsit),
           capacitate: capacitate ? Number(capacitate) : null,
         }),
       });
@@ -120,14 +136,15 @@ export function ProposeEventForm() {
       <FieldGroup title="Când și unde">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label required>Data început</Label>
-            <Input type="datetime-local" value={dataInceput} onChange={(e) => setDataInceput(e.target.value)} />
+            <Label htmlFor="pr-inceput" required>Începe</Label>
+            <DataOraInput id="pr-inceput" data={dataInceput} ora={oraInceput} onData={setDataInceput} onOra={setOraInceput} />
           </div>
           <div>
-            <Label>Data sfârșit (opțional)</Label>
-            <Input type="datetime-local" value={dataSfarsit} onChange={(e) => setDataSfarsit(e.target.value)} />
+            <Label htmlFor="pr-sfarsit">Se termină (opțional)</Label>
+            <DataOraInput id="pr-sfarsit" data={dataSfarsit} ora={oraSfarsit} onData={setDataSfarsit} onOra={setOraSfarsit} />
           </div>
         </div>
+        <FieldHint>Ora e opțională, în format de 24 de ore.</FieldHint>
 
         <label className="flex items-center gap-2 text-sm text-ink">
           <input type="checkbox" checked={online} onChange={(e) => setOnline(e.target.checked)} className="h-4 w-4" />

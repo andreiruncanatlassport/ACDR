@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { formatData, formatOra } from "@/lib/evenimente-data";
 import Link from "next/link";
 import { Plus, CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -57,7 +58,8 @@ export default async function AdminEvenimentePage() {
               <div className="min-w-0">
                 <p className="truncate font-medium text-ink">{e.titlu}</p>
                 <p className="mt-0.5 text-xs text-ink-soft">
-                  {new Date(e.data_inceput).toLocaleDateString("ro-RO", { day: "2-digit", month: "short", year: "numeric" })}
+                  {formatData(e.data_inceput, "ro-RO", { day: "2-digit", month: "short", year: "numeric" })}
+                  {e.are_ora_inceput !== false && ` · ${formatOra(e.data_inceput)}`}
                 </p>
               </div>
               <Badge tone={STATUS_TONE[e.status]}>{STATUS_LABEL[e.status]}</Badge>

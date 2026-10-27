@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, MapPin, Wifi, Users2 } from "lucide-react";
 import { Badge } from "@/components/ui/Card";
+import { formatData, formatOra } from "@/lib/evenimente-data";
 
 export interface EventCardData {
   slug: string;
@@ -11,6 +12,8 @@ export interface EventCardData {
   locatie: string | null;
   online: boolean;
   data_inceput: string;
+  /** false = evenimentul are doar data (fara ora) */
+  are_ora_inceput?: boolean;
   status: string;
   inscrisi?: number;
   capacitate?: number | null;
@@ -38,12 +41,14 @@ const LABELS_IMPLICITE: EventCardLabels = {
   cancelled: "Anulat",
 };
 
-function ziLuna(iso: string, locale: string): { zi: string; luna: string; ora: string } {
-  const d = new Date(iso);
+// Ora Romaniei si format de 24h (serverul ruleaza in UTC).
+function ziLuna(iso: string, locale: string, areOra: boolean): { zi: string; luna: string; ora: string } {
   return {
-    zi: d.toLocaleDateString(locale, { day: "2-digit" }),
-    luna: d.toLocaleDateString(locale, { month: "short" }).replace(".", ""),
-    ora: d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" }),
+    zi: formatData(iso, locale, { day: "2-digit" }),
+    luna: formatData(iso, locale, { month: "short" }).replace(".", ""),
+    ora: areOra
+      ? `${formatData(iso, locale, { weekday: "short" }).replace(".", "")}, ${formatOra(iso, locale)}`
+      : formatData(iso, locale, { weekday: "long" }),
   };
 }
 
@@ -56,7 +61,7 @@ export function EventCard({
   labels?: EventCardLabels;
   dateLocale?: string;
 }) {
-  const { zi, luna, ora } = ziLuna(event.data_inceput, dateLocale);
+  const { zi, luna, ora } = ziLuna(event.data_inceput, dateLocale, event.are_ora_inceput !== false);
   const plin = Boolean(event.capacitate && (event.inscrisi ?? 0) >= event.capacitate);
   const tipLabel = (labels as unknown as Record<string, string>)[event.tip] ?? labels.altul;
 

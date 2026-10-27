@@ -7,6 +7,24 @@ import { getT } from "@/lib/i18n/server";
 import { Badge } from "@/components/ui/Card";
 import { EventRsvpButton } from "@/components/EventRsvpButton";
 import type { EventItem } from "@/types/database";
+import { formatData, formatOra } from "@/lib/evenimente-data";
+
+/** „14 noiembrie 2026 · 18:30–21:00”, „14–15 noiembrie 2026”, „14 noiembrie 2026” — ora Romaniei, 24h. */
+function intervalEveniment(e: EventItem, locale: string): string {
+  const optiuniData: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+  const dataStart = formatData(e.data_inceput, locale, optiuniData);
+  const oraStart = e.are_ora_inceput !== false ? formatOra(e.data_inceput, locale) : null;
+  if (!e.data_sfarsit) return oraStart ? `${dataStart} · ${oraStart}` : dataStart;
+  const dataSf = formatData(e.data_sfarsit, locale, optiuniData);
+  const oraSf = e.are_ora_sfarsit !== false ? formatOra(e.data_sfarsit, locale) : null;
+  if (dataSf === dataStart) {
+    if (oraStart && oraSf) return `${dataStart} · ${oraStart}–${oraSf}`;
+    return oraStart ? `${dataStart} · ${oraStart}` : dataStart;
+  }
+  const st = oraStart ? `${dataStart}, ${oraStart}` : dataStart;
+  const sf = oraSf ? `${dataSf}, ${oraSf}` : dataSf;
+  return `${st} – ${sf}`;
+}
 
 export default async function EvenimentDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -76,9 +94,7 @@ export default async function EvenimentDetailPage({ params }: { params: Promise<
       <div className="mt-5 flex flex-wrap items-center gap-1.5">
         <Badge tone="neutral">
           <CalendarDays className="h-3 w-3" />
-          {new Date(eveniment.data_inceput).toLocaleDateString(dateLocale, { day: "2-digit", month: "long", year: "numeric" })}
-          {" · "}
-          {new Date(eveniment.data_inceput).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" })}
+          {intervalEveniment(eveniment, dateLocale)}
         </Badge>
         {eveniment.online ? (
           <Badge tone="success">

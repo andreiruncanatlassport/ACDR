@@ -420,6 +420,9 @@ export interface EventItem {
   link_extern: string | null;
   data_inceput: string;
   data_sfarsit: string | null;
+  /** false = doar data, fara ora (migratia 0042) */
+  are_ora_inceput: boolean;
+  are_ora_sfarsit: boolean;
   capacitate: number | null;
   status: EventStatus;
   created_at: string;

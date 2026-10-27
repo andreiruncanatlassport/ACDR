@@ -25,6 +25,10 @@ export async function POST(request: Request) {
     );
   }
 
+  if (Number.isNaN(Date.parse(dataInceput)) || (body?.data_sfarsit && Number.isNaN(Date.parse(body.data_sfarsit)))) {
+    return NextResponse.json({ error: "Data nu e validă." }, { status: 400 });
+  }
+
   const tip = ["conferinta", "workshop", "networking", "altul"].includes(body?.tip) ? body.tip : "networking";
 
   const admin = createServiceRoleClient();
@@ -41,6 +45,8 @@ export async function POST(request: Request) {
       link_extern: body?.link_extern ? String(body.link_extern).trim() : null,
       data_inceput: dataInceput,
       data_sfarsit: body?.data_sfarsit || null,
+      are_ora_inceput: body?.are_ora_inceput !== false,
+      are_ora_sfarsit: body?.are_ora_sfarsit !== false,
       capacitate: body?.capacitate ? Number(body.capacitate) : null,
       status: "propunere",
     } as never);

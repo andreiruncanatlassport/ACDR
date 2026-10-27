@@ -23,6 +23,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (typeof body.link_extern === "string" || body.link_extern === null) update.link_extern = body.link_extern;
   if (typeof body.data_inceput === "string") update.data_inceput = body.data_inceput;
   if (typeof body.data_sfarsit === "string" || body.data_sfarsit === null) update.data_sfarsit = body.data_sfarsit;
+  if (typeof body.are_ora_inceput === "boolean") update.are_ora_inceput = body.are_ora_inceput;
+  if (typeof body.are_ora_sfarsit === "boolean") update.are_ora_sfarsit = body.are_ora_sfarsit;
   if (body.capacitate === null || typeof body.capacitate === "number") update.capacitate = body.capacitate;
   if (["draft", "publicat", "anulat"].includes(body.status)) update.status = body.status;
 

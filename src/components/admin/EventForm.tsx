@@ -3,10 +3,13 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Camera, Loader2, Send, CalendarDays, Trash2 } from "lucide-react";
+import { Camera, Loader2, Send, CalendarDays, Trash2, Crop, ImagePlus } from "lucide-react";
 import { incarcaImagineSite } from "@/lib/upload";
 import { Input, Label, Select, Textarea, FieldError, FieldHint, FieldGroup } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { DataOraInput } from "@/components/DataOraInput";
+import { ImageCropper } from "@/components/ImageCropper";
+import { isoDinRomania, parteDinIso } from "@/lib/evenimente-data";
 import type { EventItem } from "@/types/database";
 
 const TIP_OPTIUNI = [
@@ -16,12 +19,6 @@ const TIP_OPTIUNI = [
   { id: "altul", label: "Altul" },
 ] as const;
 
-function laInputDatetime(iso: string | null | undefined): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const off = d.getTimezoneOffset();
-  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);
-}
 
 export function EventForm({ initial }: { initial?: EventItem }) {
   const router = useRouter();
@@ -34,12 +31,18 @@ export function EventForm({ initial }: { initial?: EventItem }) {
   const [locatie, setLocatie] = useState(initial?.locatie ?? "");
   const [online, setOnline] = useState(initial?.online ?? false);
   const [linkExtern, setLinkExtern] = useState(initial?.link_extern ?? "");
-  const [dataInceput, setDataInceput] = useState(laInputDatetime(initial?.data_inceput));
-  const [dataSfarsit, setDataSfarsit] = useState(laInputDatetime(initial?.data_sfarsit));
+  const inceputInitial = parteDinIso(initial?.data_inceput);
+  const sfarsitInitial = parteDinIso(initial?.data_sfarsit);
+  const [dataInceput, setDataInceput] = useState(inceputInitial.data);
+  const [oraInceput, setOraInceput] = useState(initial && initial.are_ora_inceput === false ? "" : inceputInitial.ora);
+  const [dataSfarsit, setDataSfarsit] = useState(sfarsitInitial.data);
+  const [oraSfarsit, setOraSfarsit] = useState(initial && initial.are_ora_sfarsit === false ? "" : sfarsitInitial.ora);
   const [capacitate, setCapacitate] = useState(initial?.capacitate?.toString() ?? "");
   const [imagineUrl, setImagineUrl] = useState(initial?.imagine_url ?? null);
   const [seIncarcaImagine, setSeIncarcaImagine] = useState(false);
   const [seSalveaza, setSeSalveaza] = useState(false);
+  // Poza care se editeaza acum in fereastra de incadrare (fisier nou sau poza existenta).
+  const [deIncadrat, setDeIncadrat] = useState<string | null>(null);
   const [eroare, setEroare] = useState<string | null>(null);
 
   async function incarcaImagine(fisier: File) {
@@ -55,9 +58,38 @@ export function EventForm({ initial }: { initial?: EventItem }) {
     }
   }
 
+  function alegeFisier(fisier: File) {
+    if (!fisier.type.startsWith("image/")) {
+      setEroare("Fișierul trebuie să fie o imagine.");
+      return;
+    }
+    // Originalul poate fi mare: dupa incadrare se salveaza la 1600 × 900, sub 1MB.
+    if (fisier.size > 25 * 1024 * 1024) {
+      setEroare("Imaginea e prea mare (max 25MB).");
+      return;
+    }
+    setEroare(null);
+    setDeIncadrat(URL.createObjectURL(fisier));
+  }
+
+  function inchideIncadrarea() {
+    if (deIncadrat?.startsWith("blob:")) URL.revokeObjectURL(deIncadrat);
+    setDeIncadrat(null);
+  }
+
   async function salveaza(status: "draft" | "publicat") {
     if (!titlu.trim() || !descriere.trim() || !dataInceput) {
       setEroare("Titlul, descrierea și data de început sunt obligatorii.");
+      return;
+    }
+    const inceputIso = isoDinRomania(dataInceput, oraInceput || null);
+    const sfarsitIso = dataSfarsit ? isoDinRomania(dataSfarsit, oraSfarsit || null) : null;
+    if (!inceputIso || (dataSfarsit && !sfarsitIso)) {
+      setEroare("Data nu e validă. Verifică ziua, luna și anul.");
+      return;
+    }
+    if (sfarsitIso && sfarsitIso < inceputIso) {
+      setEroare("Data de sfârșit e înaintea datei de început.");
       return;
     }
     setSeSalveaza(true);
@@ -70,8 +102,10 @@ export function EventForm({ initial }: { initial?: EventItem }) {
         locatie: online ? null : locatie,
         online,
         link_extern: linkExtern || null,
-        data_inceput: new Date(dataInceput).toISOString(),
-        data_sfarsit: dataSfarsit ? new Date(dataSfarsit).toISOString() : null,
+        data_inceput: inceputIso,
+        are_ora_inceput: Boolean(oraInceput),
+        data_sfarsit: sfarsitIso,
+        are_ora_sfarsit: Boolean(oraSfarsit),
         capacitate: capacitate ? Number(capacitate) : null,
         imagine_url: imagineUrl,
         status,
@@ -141,14 +175,15 @@ export function EventForm({ initial }: { initial?: EventItem }) {
       <FieldGroup title="Loc și dată">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label required>Începe la</Label>
-            <Input type="datetime-local" value={dataInceput} onChange={(e) => setDataInceput(e.target.value)} />
+            <Label htmlFor="ev-inceput" required>Începe</Label>
+            <DataOraInput id="ev-inceput" data={dataInceput} ora={oraInceput} onData={setDataInceput} onOra={setOraInceput} />
           </div>
           <div>
-            <Label>Se termină la</Label>
-            <Input type="datetime-local" value={dataSfarsit} onChange={(e) => setDataSfarsit(e.target.value)} />
+            <Label htmlFor="ev-sfarsit">Se termină (opțional)</Label>
+            <DataOraInput id="ev-sfarsit" data={dataSfarsit} ora={oraSfarsit} onData={setDataSfarsit} onOra={setOraSfarsit} />
           </div>
         </div>
+        <FieldHint>Ora e opțională și în format de 24 de ore (ex. 18:30). Fără oră, se afișează doar data.</FieldHint>
 
         <label className="flex items-center gap-2 text-sm text-ink">
           <input type="checkbox" checked={online} onChange={(e) => setOnline(e.target.checked)} className="h-4 w-4 accent-[var(--color-seal)]" />
@@ -175,23 +210,37 @@ export function EventForm({ initial }: { initial?: EventItem }) {
       </FieldGroup>
 
       <FieldGroup title="Imagine">
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="group relative h-20 w-32 shrink-0 overflow-hidden rounded-xl bg-ink/5 ring-1 ring-inset ring-line"
-          >
+        <div className="flex flex-col gap-3">
+          <div className="relative aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl bg-ink/5 ring-1 ring-inset ring-line">
             {imagineUrl ? (
               <Image src={imagineUrl} alt="" fill className="object-cover" unoptimized />
             ) : (
-              <div className="flex h-full items-center justify-center text-ink-soft/40">
-                <CalendarDays className="h-6 w-6" strokeWidth={1.5} />
+              <div className="flex h-full items-center justify-center text-ink-soft/50">
+                <CalendarDays className="h-8 w-8" strokeWidth={1.5} />
               </div>
             )}
-            <div className="absolute inset-0 flex items-center justify-center bg-navy/50 opacity-0 transition group-hover:opacity-100">
-              {seIncarcaImagine ? <Loader2 className="h-5 w-5 animate-spin text-white" /> : <Camera className="h-5 w-5 text-white" />}
-            </div>
-          </button>
+            {seIncarcaImagine && (
+              <div className="absolute inset-0 flex items-center justify-center bg-navy/50">
+                <Loader2 className="h-6 w-6 animate-spin text-white" />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => fileRef.current?.click()} disabled={seIncarcaImagine}>
+              {imagineUrl ? <Camera className="h-4 w-4" /> : <ImagePlus className="h-4 w-4" />}
+              {imagineUrl ? "Schimbă poza" : "Adaugă poză"}
+            </Button>
+            {imagineUrl && (
+              <Button variant="secondary" onClick={() => setDeIncadrat(imagineUrl)} disabled={seIncarcaImagine}>
+                <Crop className="h-4 w-4" /> Ajustează încadrarea
+              </Button>
+            )}
+            {imagineUrl && (
+              <Button variant="ghost" onClick={() => setImagineUrl(null)} disabled={seIncarcaImagine}>
+                <Trash2 className="h-4 w-4" /> Scoate poza
+              </Button>
+            )}
+          </div>
           <input
             ref={fileRef}
             type="file"
@@ -199,12 +248,25 @@ export function EventForm({ initial }: { initial?: EventItem }) {
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) incarcaImagine(f);
+              if (f) alegeFisier(f);
+              e.target.value = "";
             }}
           />
-          <FieldHint>JPG sau PNG, sub 5MB. Format recomandat 16:9.</FieldHint>
+          <FieldHint>JPG sau PNG. După alegere poți muta și mări poza; se salvează la 16:9 (1600 × 900).</FieldHint>
         </div>
       </FieldGroup>
+
+      {deIncadrat && (
+        <ImageCropper
+          src={deIncadrat}
+          titlu="Încadrează poza evenimentului"
+          onRenunta={inchideIncadrarea}
+          onGata={async (fisier) => {
+            await incarcaImagine(fisier);
+            inchideIncadrarea();
+          }}
+        />
+      )}
 
       <FieldError>{eroare}</FieldError>
 
